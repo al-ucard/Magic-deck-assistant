@@ -13,22 +13,24 @@
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 
-  #keyScreen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:100}
-  .key-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 24px;width:100%;max-width:400px;display:flex;flex-direction:column;gap:16px}
-  .key-logo{font-family:'Cinzel',serif;font-size:22px;color:var(--gold);text-align:center}
-  .key-logo span{font-size:28px;display:block;margin-bottom:4px}
-  .key-steps{background:#0e0e14;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.8;color:var(--muted)}
-  .key-steps b{color:var(--text)}.key-steps a{color:var(--gold);text-decoration:none}
-  .key-input-wrap{display:flex;flex-direction:column;gap:6px}
+  /* ── KEY SCREEN ── */
+  #keyScreen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:100;overflow-y:auto}
+  .key-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 24px;width:100%;max-width:420px;display:flex;flex-direction:column;gap:14px}
+  .key-logo{font-family:'Cinzel',serif;font-size:20px;color:var(--gold);text-align:center}
+  .key-logo span{font-size:26px;display:block;margin-bottom:4px}
+  .key-section{background:#0e0e14;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.8;color:var(--muted)}
+  .key-section b{color:var(--text)}.key-section a{color:var(--gold);text-decoration:none}
+  .key-section + .key-section{margin-top:-4px}
+  .key-input-wrap{display:flex;flex-direction:column;gap:5px}
   .key-input-wrap label{font-size:12px;color:var(--muted)}
-  #apiKeyInput{background:#0e0e12;border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:monospace;font-size:13px;padding:10px 12px;outline:none;width:100%;transition:border-color .15s}
-  #apiKeyInput:focus{border-color:var(--gold-dim)}
-  #apiKeyInput::placeholder{color:var(--muted);font-family:'Inter',sans-serif}
-  .key-btn{background:var(--gold);border:none;border-radius:var(--radius);color:#0e0e12;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;padding:12px;cursor:pointer;transition:opacity .15s}
-  .key-btn:hover{opacity:.85}
+  .key-input{background:#0e0e12;border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:monospace;font-size:13px;padding:10px 12px;outline:none;width:100%;transition:border-color .15s}
+  .key-input:focus{border-color:var(--gold-dim)}
+  .key-input::placeholder{color:var(--muted);font-family:'Inter',sans-serif}
+  .key-btn{background:var(--gold);border:none;border-radius:var(--radius);color:#0e0e12;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;padding:12px;cursor:pointer}
   .key-note{font-size:11px;color:var(--muted);text-align:center}
-  #keyError{font-size:12px;color:var(--illegal);text-align:center;display:none}
+  .key-error{font-size:12px;color:var(--illegal);text-align:center;display:none}
 
+  /* ── APP ── */
   #app{display:none;flex-direction:column;height:100dvh}
   header{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
   .header-icon{width:34px;height:34px;background:linear-gradient(135deg,#7b2d2d,#c9a84c);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
@@ -42,29 +44,34 @@
   .format-btn:hover{border-color:var(--gold-dim);color:var(--text)}
   .format-btn.active{background:var(--gold);border-color:var(--gold);color:#0e0e12;font-weight:600}
 
-  #chat{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:14px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+  #chat{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
   .msg{display:flex;gap:8px;animation:fadeIn .2s ease}
   .msg.user{flex-direction:row-reverse}
   @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1}}
   .avatar{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;margin-top:2px}
   .msg.user .avatar{background:#2d2d5e}
   .msg.ai .avatar{background:linear-gradient(135deg,#7b2d2d,#c9a84c)}
-  .bubble{max-width:86%;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:14px;line-height:1.55}
+  .bubble{max-width:88%;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:14px;line-height:1.6}
   .msg.user .bubble{background:#1e1e3a;border-color:#3a3a6a}
   .bubble p+p{margin-top:7px}
   .bubble strong{color:var(--gold)}
+  .bubble ul{margin:6px 0 0 16px}
+  .bubble ul li{margin-bottom:3px}
+  .bubble em{color:var(--muted);font-style:normal;font-size:13px}
 
+  /* decklist */
   .decklist{margin-top:10px;display:flex;flex-direction:column;gap:4px}
   .deck-section-title{font-size:11px;color:var(--muted);margin:8px 0 2px;text-transform:uppercase;letter-spacing:.05em}
   .card-row{display:flex;align-items:center;gap:8px;background:#0e0e14;border-radius:6px;padding:5px 9px;border:1px solid var(--border);font-size:13px;border-left:3px solid var(--legal)}
-  .card-qty{color:var(--muted);font-size:12px;min-width:20px}
+  .card-qty{color:var(--muted);font-size:12px;min-width:22px}
   .card-name{flex:1;font-weight:500}
 
-  .status-bubble{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px;max-width:86%;animation:fadeIn .2s ease;margin-left:36px}
-  .status-bubble .spin{animation:spin 1s linear infinite;display:inline-block}
+  /* status */
+  .status-bubble{background:#0e0e14;border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px;margin-left:36px;animation:fadeIn .2s ease}
+  .status-bubble .spin{display:inline-block;animation:spin 1.2s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
-  .status-bubble.done{color:var(--legal)}
-  .status-bubble.warn{color:var(--warning)}
+  .status-bubble.done{color:var(--legal);border-color:#1a3d2a}
+  .status-bubble.warn{color:var(--warning);border-color:#3d2e0a}
 
   .typing{display:flex;gap:4px;align-items:center;padding:4px 0}
   .typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce .9s infinite}
@@ -73,7 +80,7 @@
   @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
 
   .input-area{background:var(--surface);border-top:1px solid var(--border);padding:10px 14px;display:flex;gap:8px;flex-shrink:0}
-  #userInput{flex:1;background:#0e0e12;border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:10px 12px;resize:none;min-height:44px;max-height:110px;outline:none;transition:border-color .15s;line-height:1.4}
+  #userInput{flex:1;background:#0e0e12;border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:10px 12px;resize:none;min-height:44px;max-height:120px;outline:none;transition:border-color .15s;line-height:1.4}
   #userInput:focus{border-color:var(--gold-dim)}
   #userInput::placeholder{color:var(--muted)}
   #sendBtn{background:var(--gold);border:none;border-radius:var(--radius);width:44px;height:44px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;align-self:flex-end;transition:opacity .15s}
@@ -82,184 +89,256 @@
 </head>
 <body>
 
+<!-- KEY SCREEN -->
 <div id="keyScreen">
   <div class="key-card">
     <div class="key-logo"><span>🃏</span>Magic Deck Assistant</div>
-    <div class="key-steps">
-      <b>Groq es gratis. Necesitas una API key:</b><br>
-      1. Ve a <a href="https://console.groq.com" target="_blank">console.groq.com</a><br>
-      2. Regístrate (sin tarjeta de crédito)<br>
-      3. Entra en <b>API Keys &rarr; Create key</b><br>
-      4. Copia y pega la key aquí abajo
+
+    <div class="key-section">
+      <b>1. API key de Groq (IA)</b><br>
+      Ve a <a href="https://console.groq.com" target="_blank">console.groq.com</a> → regístrate gratis → API Keys → Create key
     </div>
     <div class="key-input-wrap">
-      <label>API key de Groq</label>
-      <input id="apiKeyInput" type="password" placeholder="gsk_…" autocomplete="off" spellcheck="false" />
+      <label>Groq API Key</label>
+      <input class="key-input" id="groqKeyInput" type="password" placeholder="gsk_…" autocomplete="off" />
     </div>
-    <div id="keyError">La key debe empezar por gsk_ y tener al menos 20 caracteres.</div>
+
+    <div class="key-section">
+      <b>2. API key de Spicerack (decklists de torneo)</b><br>
+      Ve a <a href="https://www.spicerack.gg" target="_blank">spicerack.gg</a> → regístrate gratis → Settings → API Key
+    </div>
+    <div class="key-input-wrap">
+      <label>Spicerack API Key</label>
+      <input class="key-input" id="spiceKeyInput" type="password" placeholder="sk_…" autocomplete="off" />
+    </div>
+
+    <div class="key-error" id="keyError">Revisa las keys e inténtalo de nuevo.</div>
     <button class="key-btn" id="keyBtn">Entrar →</button>
-    <p class="key-note">La key se guarda solo en tu navegador.<br>Nunca sale de tu dispositivo.</p>
+    <p class="key-note">Las keys se guardan solo en tu navegador.</p>
   </div>
 </div>
 
+<!-- APP -->
 <div id="app">
   <header>
     <div class="header-icon">🃏</div>
     <div>
       <h1>Magic Deck Assistant</h1>
-      <p>Groq · Web Search · Scryfall</p>
+      <p>Spicerack · Groq · Scryfall</p>
     </div>
-    <button class="logout-btn" onclick="logout()">🔑 Key</button>
+    <button class="logout-btn" onclick="logout()">🔑 Keys</button>
   </header>
   <div class="format-bar">
     <span class="format-label">Formato:</span>
-    <button class="format-btn" data-fmt="standard">Standard</button>
-    <button class="format-btn" data-fmt="pioneer">Pioneer</button>
-    <button class="format-btn" data-fmt="modern">Modern</button>
-    <button class="format-btn" data-fmt="legacy">Legacy</button>
-    <button class="format-btn" data-fmt="vintage">Vintage</button>
-    <button class="format-btn active" data-fmt="premodern">Premodern</button>
-    <button class="format-btn" data-fmt="commander">Commander</button>
-    <button class="format-btn" data-fmt="pauper">Pauper</button>
+    <button class="format-btn" data-fmt="standard" data-spice="STANDARD">Standard</button>
+    <button class="format-btn" data-fmt="pioneer" data-spice="PIONEER">Pioneer</button>
+    <button class="format-btn" data-fmt="modern" data-spice="MODERN">Modern</button>
+    <button class="format-btn" data-fmt="legacy" data-spice="LEGACY">Legacy</button>
+    <button class="format-btn" data-fmt="vintage" data-spice="VINTAGE">Vintage</button>
+    <button class="format-btn active" data-fmt="premodern" data-spice="PREMODERN">Premodern</button>
+    <button class="format-btn" data-fmt="commander" data-spice="COMMANDER2">Commander</button>
+    <button class="format-btn" data-fmt="pauper" data-spice="PAUPER">Pauper</button>
   </div>
   <div id="chat"></div>
   <div class="input-area">
-    <textarea id="userInput" rows="1" placeholder="Pídeme un mazo, cartas para tu estrategia…"></textarea>
+    <textarea id="userInput" rows="1" placeholder="Cuéntame qué mazo quieres construir…"></textarea>
     <button id="sendBtn">➤</button>
   </div>
 </div>
 
 <script>
 let currentFormat = "premodern";
+let currentSpiceFormat = "PREMODERN";
 let conversationHistory = [];
 let isLoading = false;
-let groqKey = "";
+let groqKey = "", spiceKey = "";
+// Stores metagame context fetched from Spicerack for current session
+let metagameContext = "";
+let awaitingGrillAnswer = false;
 
-// ── Key ───────────────────────────────────────────────────────────────────────
-function saveKey() {
-  const val = document.getElementById('apiKeyInput').value.trim();
-  if (!val.startsWith('gsk_') || val.length < 20) {
-    document.getElementById('keyError').style.display = 'block'; return;
-  }
-  groqKey = val;
-  try { localStorage.setItem('groq_key', val); } catch(e){}
+// ── Keys ──────────────────────────────────────────────────────────────────────
+function saveKeys() {
+  const gk = document.getElementById('groqKeyInput').value.trim();
+  const sk = document.getElementById('spiceKeyInput').value.trim();
+  const err = document.getElementById('keyError');
+  if (!gk.startsWith('gsk_') || gk.length < 20) { err.style.display='block'; err.textContent='La key de Groq debe empezar por gsk_'; return; }
+  if (!sk.startsWith('sk_') || sk.length < 10) { err.style.display='block'; err.textContent='La key de Spicerack debe empezar por sk_'; return; }
+  groqKey = gk; spiceKey = sk;
+  try { localStorage.setItem('groq_key', gk); localStorage.setItem('spice_key', sk); } catch(e){}
   showApp();
 }
 function logout() {
-  try { localStorage.removeItem('groq_key'); } catch(e){}
-  groqKey = "";
+  try { localStorage.removeItem('groq_key'); localStorage.removeItem('spice_key'); } catch(e){}
+  groqKey = ""; spiceKey = "";
   document.getElementById('app').style.display = 'none';
   document.getElementById('keyScreen').style.display = 'flex';
-  document.getElementById('apiKeyInput').value = '';
+  document.getElementById('groqKeyInput').value = '';
+  document.getElementById('spiceKeyInput').value = '';
   document.getElementById('keyError').style.display = 'none';
+  conversationHistory = []; metagameContext = "";
 }
 function showApp() {
   document.getElementById('keyScreen').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
-  if (!document.getElementById('chat').children.length) {
-    appendText('ai', 'Hola! Formato activo: <strong>Premodern</strong>.<br>Cuando pidas un mazo buscaré inspiración en <strong>MTGGoldfish</strong> y <strong>TCDecks</strong>, luego verificaré cada carta en Scryfall antes de mostrártelo.<br><br>Prueba: <em>"quiero un control azul"</em> o <em>"mazo aggro rojo barato"</em>.');
-  }
+  if (!document.getElementById('chat').children.length) welcome();
 }
 window.addEventListener('load', () => {
   try {
-    const s = localStorage.getItem('groq_key');
-    if (s && s.startsWith('gsk_')) { groqKey = s; document.getElementById('apiKeyInput').value = s; showApp(); }
+    const gk = localStorage.getItem('groq_key');
+    const sk = localStorage.getItem('spice_key');
+    if (gk && gk.startsWith('gsk_') && sk && sk.startsWith('sk_')) {
+      groqKey = gk; spiceKey = sk;
+      document.getElementById('groqKeyInput').value = gk;
+      document.getElementById('spiceKeyInput').value = sk;
+      showApp();
+    }
   } catch(e){}
 });
-document.getElementById('keyBtn').addEventListener('click', saveKey);
-document.getElementById('apiKeyInput').addEventListener('keydown', e => { if (e.key==='Enter') saveKey(); });
+document.getElementById('keyBtn').addEventListener('click', saveKeys);
+['groqKeyInput','spiceKeyInput'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => { if(e.key==='Enter') saveKeys(); });
+});
 
-// ── Status messages ───────────────────────────────────────────────────────────
-function addStatus(text, type) {
-  type = type || 'info';
-  const chat = document.getElementById('chat');
-  const el = document.createElement('div');
-  el.className = 'status-bubble' + (type==='done' ? ' done' : type==='warn' ? ' warn' : '');
-  el.innerHTML = (type==='info' ? '<span class="spin">⚙️</span> ' : type==='done' ? '✓ ' : '⚠ ') + text;
-  chat.appendChild(el);
-  chat.scrollTop = 9999;
-  return el;
-}
-function clearStatuses() {
-  document.querySelectorAll('.status-bubble').forEach(e => e.remove());
-}
-
-function appendText(role, html) {
+// ── UI helpers ────────────────────────────────────────────────────────────────
+function appendBubble(role, html) {
   const chat = document.getElementById('chat');
   const wrap = document.createElement('div'); wrap.className = 'msg ' + role;
-  const av = document.createElement('div'); av.className = 'avatar'; av.textContent = role==='user' ? '🧙' : '🤖';
-  const bu = document.createElement('div'); bu.className = 'bubble'; bu.innerHTML = '<p>' + html + '</p>';
+  const av = document.createElement('div'); av.className = 'avatar'; av.textContent = role==='user'?'🧙':'🤖';
+  const bu = document.createElement('div'); bu.className = 'bubble'; bu.innerHTML = html;
   wrap.appendChild(av); wrap.appendChild(bu);
   chat.appendChild(wrap); chat.scrollTop = 9999;
   return bu;
 }
-
+function addStatus(text, type) {
+  type = type||'info';
+  const chat = document.getElementById('chat');
+  const el = document.createElement('div');
+  el.className = 'status-bubble'+(type==='done'?' done':type==='warn'?' warn':'');
+  el.innerHTML = (type==='info'?'<span class="spin">⚙️</span> ':type==='done'?'✅ ':'⚠️ ') + text;
+  chat.appendChild(el); chat.scrollTop = 9999;
+  return el;
+}
+function clearStatuses() { document.querySelectorAll('.status-bubble').forEach(e=>e.remove()); }
 function showTyping() {
   const chat = document.getElementById('chat');
-  const wrap = document.createElement('div'); wrap.className = 'msg ai'; wrap.id = 'typing-ind';
-  const av = document.createElement('div'); av.className = 'avatar'; av.textContent = '🤖';
-  const bu = document.createElement('div'); bu.className = 'bubble';
-  bu.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
-  wrap.appendChild(av); wrap.appendChild(bu); chat.appendChild(wrap); chat.scrollTop = 9999;
+  const wrap = document.createElement('div'); wrap.className='msg ai'; wrap.id='typing-ind';
+  const av = document.createElement('div'); av.className='avatar'; av.textContent='🤖';
+  const bu = document.createElement('div'); bu.className='bubble';
+  bu.innerHTML='<div class="typing"><span></span><span></span><span></span></div>';
+  wrap.appendChild(av); wrap.appendChild(bu); chat.appendChild(wrap); chat.scrollTop=9999;
 }
 function removeTyping() { document.getElementById('typing-ind')?.remove(); }
 
-function renderDecklist(cards, intro, sources) {
-  const chat = document.getElementById('chat');
-  const wrap = document.createElement('div'); wrap.className = 'msg ai';
-  const av = document.createElement('div'); av.className = 'avatar'; av.textContent = '🤖';
-  const bu = document.createElement('div'); bu.className = 'bubble';
-  bu.innerHTML = '<p>' + intro + '</p>';
-
-  if (sources && sources.length) {
-    const srcEl = document.createElement('p');
-    srcEl.style.cssText = 'font-size:11px;color:var(--muted);margin-top:4px';
-    srcEl.innerHTML = '🔍 Inspirado en: ' + sources.map(s => '<em>' + s + '</em>').join(', ');
-    bu.appendChild(srcEl);
-  }
-
-  const dl = document.createElement('div'); dl.className = 'decklist';
-  const lands = cards.filter(c => c._isLand);
-  const spells = cards.filter(c => !c._isLand);
-
-  function addSection(title, list) {
-    if (!list.length) return;
-    const t = document.createElement('div'); t.className = 'deck-section-title';
-    t.textContent = title + ' (' + list.reduce((a,c)=>a+c.qty,0) + ')';
-    dl.appendChild(t);
-    list.forEach(c => {
-      const row = document.createElement('div'); row.className = 'card-row';
-      row.innerHTML = '<span class="card-qty">' + c.qty + 'x</span><span class="card-name">' + (c.name || c.scryfallName) + '</span>';
-      dl.appendChild(row);
-    });
-  }
-  addSection('Hechizos', spells);
-  addSection('Tierras', lands);
-
-  const total = cards.reduce((a,c)=>a+c.qty,0);
-  const footer = document.createElement('div');
-  footer.style.cssText = 'font-size:11px;color:var(--muted);margin-top:8px;text-align:right';
-  footer.textContent = total + ' cartas · verificadas en Scryfall ✓';
-  dl.appendChild(footer);
-
-  bu.appendChild(dl);
-  wrap.appendChild(av); wrap.appendChild(bu);
-  chat.appendChild(wrap); chat.scrollTop = 9999;
+function md(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/^#{1,3}\s+(.+)$/gm,'<strong>$1</strong>')
+    .replace(/^[-•]\s+(.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s,'<ul>$1</ul>')
+    .replace(/\n\n/g,'</p><p>')
+    .replace(/\n/g,'<br>');
 }
 
-// ── Scryfall ──────────────────────────────────────────────────────────────────
+function welcome() {
+  appendBubble('ai',
+    '<p>¡Hola! Soy tu asistente de construcción de mazos de Magic. 🃏</p>' +
+    '<p>Cuando me pidas un mazo haré lo siguiente:</p>' +
+    '<ul>' +
+    '<li>Buscaré decklists reales de torneo en <strong>Spicerack</strong></li>' +
+    '<li>Analizaré el metagame actual del formato</li>' +
+    '<li>Te haré preguntas clave antes de construir</li>' +
+    '<li>Buscaré cartas por función en <strong>Scryfall</strong></li>' +
+    '<li>Validaré cada carta antes de mostrártela</li>' +
+    '</ul>' +
+    '<p>Formato activo: <strong>Premodern</strong>. Cuéntame qué quieres construir.</p>'
+  );
+}
+
+// ── Spicerack ─────────────────────────────────────────────────────────────────
+async function fetchSpiceracklists(spiceFormat, days) {
+  days = days || 90;
+  const url = 'https://api.spicerack.gg/api/export-decklists/?num_days='+days+'&event_format='+spiceFormat+'&decklist_as_text=true';
+  const resp = await fetch(url, { headers: { 'X-API-Key': spiceKey } });
+  if (!resp.ok) throw new Error('Spicerack error ' + resp.status);
+  return resp.json();
+}
+
+function extractTopDecklists(tournaments, maxDecks) {
+  maxDecks = maxDecks || 8;
+  const decks = [];
+  for (const t of tournaments) {
+    if (!t.standings) continue;
+    // Sort by wins descending, take top finishers
+    const sorted = [...t.standings]
+      .filter(s => s.decklist_text && s.decklist_text.length > 20)
+      .sort((a,b) => (b.winsSwiss||0) - (a.winsSwiss||0));
+    for (const s of sorted.slice(0, 3)) {
+      decks.push({
+        player: s.name,
+        tournament: t.tournamentName,
+        wins: s.winsSwiss,
+        text: s.decklist_text
+      });
+      if (decks.length >= maxDecks) return decks;
+    }
+  }
+  return decks;
+}
+
+function buildMetagameContext(decks) {
+  if (!decks.length) return "";
+  // Count card frequency across all top decks
+  const freq = {};
+  for (const d of decks) {
+    const lines = d.text.split('\n');
+    for (const line of lines) {
+      const m = line.trim().match(/^(\d+)\s+(.+)$/);
+      if (m) {
+        const name = m[2].replace(/\s*\(.*$/,'').trim();
+        const qty = parseInt(m[1]);
+        freq[name] = (freq[name]||0) + qty;
+      }
+    }
+  }
+  // Sort by frequency
+  const sorted = Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,60);
+  const cardList = sorted.map(([name,count])=>count+'x '+name).join('\n');
+
+  const deckSummaries = decks.slice(0,4).map((d,i) =>
+    '--- Mazo '+(i+1)+' ('+d.player+', '+d.wins+' wins) ---\n'+d.text.slice(0,400)
+  ).join('\n\n');
+
+  return 'METAGAME REAL (últimos 90 días, '+decks.length+' mazos top de torneo):\n\n'+
+    'CARTAS MÁS JUGADAS EN EL FORMATO:\n'+cardList+'\n\n'+
+    'EJEMPLOS DE MAZOS GANADORES:\n'+deckSummaries;
+}
+
+// ── Scryfall card search by function ─────────────────────────────────────────
+async function scryfallSearch(query, format, maxCards) {
+  maxCards = maxCards || 10;
+  const q = encodeURIComponent(query + ' legal:' + format);
+  const url = 'https://api.scryfall.com/cards/search?q='+q+'&order=edhrec&page=1';
+  try {
+    const r = await fetch(url);
+    if (!r.ok) return [];
+    const d = await r.json();
+    return (d.data||[]).slice(0, maxCards).map(c => c.name);
+  } catch { return []; }
+}
+
 async function scryfallCheck(cardName, format) {
   try {
-    const r = await fetch('https://api.scryfall.com/cards/named?fuzzy=' + encodeURIComponent(cardName));
-    if (!r.ok) return { ok: false, reason: 'not_found', name: cardName };
+    const r = await fetch('https://api.scryfall.com/cards/named?fuzzy='+encodeURIComponent(cardName));
+    if (!r.ok) return { ok:false, reason:'not_found', name:cardName };
     const d = await r.json();
     const s = d.legalities?.[format];
-    const realName = d.name;
-    if (s === 'legal')      return { ok: true,  status: 'legal',      name: realName };
-    if (s === 'restricted') return { ok: true,  status: 'restricted', name: realName };
-    if (s === 'banned')     return { ok: false, reason: 'banned',     name: realName };
-    return                         { ok: false, reason: 'not_legal',  name: realName };
-  } catch { return { ok: false, reason: 'error', name: cardName }; }
+    const name = d.name;
+    if (s==='legal')      return { ok:true,  status:'legal',      name };
+    if (s==='restricted') return { ok:true,  status:'restricted', name };
+    if (s==='banned')     return { ok:false, reason:'banned',     name };
+    return                       { ok:false, reason:'not_legal',  name };
+  } catch { return { ok:false, reason:'error', name:cardName }; }
 }
 
 async function validateList(cards, format) {
@@ -270,252 +349,269 @@ async function validateList(cards, format) {
 }
 
 function parseDecklist(text) {
-  const cards = [];
-  const seen = new Set();
+  const cards = []; const seen = new Set();
   for (const line of text.split('\n')) {
     const m = line.trim().match(/^(\d+)x?\s+(.+)$/);
     if (m) {
       const qty = parseInt(m[1]);
-      const name = m[2].replace(/\*\*/g,'').replace(/\s*\/\/.*$/,'').trim();
-      if (qty > 0 && qty <= 4 && name.length > 1 && !seen.has(name.toLowerCase())) {
-        seen.add(name.toLowerCase());
-        cards.push({ qty, name });
+      const name = m[2].replace(/\*\*/g,'').replace(/\s*\(.*$/,'').replace(/\s*\/\/.*$/,'').trim();
+      if (qty>0 && qty<=4 && name.length>1 && !seen.has(name.toLowerCase()) &&
+          !/^(total|lands|spells|creatures|sideboard|maindeck|main|hechizos|tierras|criaturas)/i.test(name)) {
+        seen.add(name.toLowerCase()); cards.push({qty,name});
       }
     }
   }
   return cards;
 }
 
-// ── Groq API call ─────────────────────────────────────────────────────────────
-async function callGroq(messages, systemPrompt, useWebSearch) {
-  const body = {
-    model: 'llama-3.3-70b-versatile',
-    max_tokens: 2000,
-    messages: [{ role: 'system', content: systemPrompt }, ...messages]
-  };
-  if (useWebSearch) {
-    body.tools = [{ type: 'web_search' }];
-    body.tool_choice = 'auto';
-  }
+function countCards(cards) { return cards.reduce((a,c)=>a+c.qty,0); }
+
+function isLand(name) {
+  return /plains|island|swamp|mountain|forest|scrubland|tundra|taiga|badlands|savannah|plateau|tropical|underground|volcanic|bayou|city of brass|gemstone|ancient tomb|wasteland|rishadan|brushland|underground river|sulfurous springs|karplusan|adarkar|shivan reef|llanowar wastes|yavimaya coast|caves of koilos|brushland|battlefield forge/i.test(name);
+}
+
+// ── Groq ──────────────────────────────────────────────────────────────────────
+async function callGroq(messages, system) {
   const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + groqKey },
-    body: JSON.stringify(body)
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+groqKey},
+    body: JSON.stringify({
+      model:'llama-3.3-70b-versatile',
+      max_tokens:1500,
+      messages:[{role:'system',content:system},...messages]
+    })
   });
   if (!resp.ok) {
     const err = await resp.json().catch(()=>({}));
-    if (resp.status === 401) { logout(); throw new Error('API key inválida.'); }
-    throw new Error(err.error?.message || 'HTTP ' + resp.status);
+    if (resp.status===401) { logout(); throw new Error('API key de Groq inválida.'); }
+    throw new Error(err.error?.message||'HTTP '+resp.status);
   }
   const data = await resp.json();
-  // Extract text from response (may include tool calls)
-  const content = data.choices?.[0]?.message?.content || "";
-  return content;
+  return data.choices?.[0]?.message?.content||"";
 }
 
-// ── Step 1: Research on MTGGoldfish / TCDecks ─────────────────────────────────
-async function researchDecks(userRequest, format) {
-  const systemPrompt = `Eres un investigador de mazos de Magic: The Gathering. Tu tarea es buscar en internet mazos de torneo para el formato ${format.toUpperCase()} que sean similares a lo que pide el usuario.
-
-Busca en sitios como mtggoldfish.com, tcdecks.net, mtgtop8.com decklists reales de torneo.
-
-Devuelve SOLO una lista de cartas (nombres en inglés) que aparecen frecuentemente en ese tipo de mazos, en formato:
-4 Nombre de Carta
-3 Otro Nombre
-...
-
-No incluyas texto explicativo. Solo la lista de cartas con cantidades típicas de torneo.`;
-
-  const searchQuery = format + ' magic the gathering ' + userRequest + ' decklist tournament site:mtggoldfish.com OR site:tcdecks.net OR site:mtgtop8.com';
-
-  const messages = [{
-    role: 'user',
-    content: 'Busca decklists de torneo en MTGGoldfish y TCDecks para este mazo de ' + format + ': ' + userRequest + '. Query de búsqueda sugerida: ' + searchQuery
-  }];
-
-  try {
-    // Try with web search tool
-    const body = {
-      model: 'llama-3.3-70b-versatile',
-      max_tokens: 2000,
-      messages: [{ role: 'system', content: systemPrompt }, ...messages],
-      tools: [{ type: 'web_search' }],
-      tool_choice: 'auto'
-    };
-    const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + groqKey },
-      body: JSON.stringify(body)
-    });
-    if (!resp.ok) throw new Error('search_failed');
-    const data = await resp.json();
-
-    // Handle tool call loop if needed
-    let finalContent = data.choices?.[0]?.message?.content || "";
-    const toolCalls = data.choices?.[0]?.message?.tool_calls;
-
-    if (toolCalls && toolCalls.length > 0) {
-      // Model used web search — get follow-up with results
-      const followMessages = [
-        ...messages,
-        { role: 'assistant', content: data.choices[0].message.content || "", tool_calls: toolCalls },
-      ];
-      // Add tool results placeholder (Groq handles this internally with web_search)
-      // Just get the final answer
-      finalContent = data.choices?.[0]?.message?.content || "";
-    }
-
-    const sources = ['MTGGoldfish', 'TCDecks'];
-    return { raw: finalContent, sources };
-  } catch(e) {
-    // Fallback: no web search, use AI knowledge
-    return { raw: '', sources: [] };
-  }
-}
-
-// ── Main deck building flow ───────────────────────────────────────────────────
-async function buildDeck(userRequest) {
+// ── GRILL ME: Phase 1 — Fetch metagame & ask questions ───────────────────────
+async function grillPhase1(userRequest) {
   const format = currentFormat;
 
-  // PHASE 1: Research
-  const s1 = addStatus('Buscando mazos de torneo en MTGGoldfish y TCDecks…');
-  const { raw: researchRaw, sources } = await researchDecks(userRequest, format);
-  s1.remove();
-
-  const hasResearch = researchRaw && parseDecklist(researchRaw).length > 0;
-  if (hasResearch) {
-    addStatus('Encontré referencias de torneo en ' + sources.join(' y ') + '.', 'done');
-    setTimeout(() => clearStatuses(), 1500);
+  // Fetch Spicerack data
+  const s1 = addStatus('Consultando decklists de torneo en Spicerack…');
+  let decks = [];
+  try {
+    const tournaments = await fetchSpiceracklists(currentSpiceFormat, 90);
+    decks = extractTopDecklists(tournaments, 8);
+    metagameContext = buildMetagameContext(decks);
+    s1.remove();
+    if (decks.length > 0) {
+      addStatus('Encontré '+decks.length+' mazos top de los últimos 90 días.', 'done');
+      setTimeout(clearStatuses, 2000);
+    } else {
+      addStatus('No encontré torneos recientes. Usando conocimiento interno.', 'warn');
+      setTimeout(clearStatuses, 2000);
+    }
+  } catch(e) {
+    s1.remove();
+    addStatus('No se pudo conectar a Spicerack. Usando conocimiento interno.', 'warn');
+    setTimeout(clearStatuses, 2000);
   }
 
-  // PHASE 2: Generate full decklist using research as context
-  const s2 = addStatus('Construyendo mazo basándome en los tops…');
+  // Search relevant cards in Scryfall
+  const s2 = addStatus('Buscando cartas relevantes en Scryfall…');
+  const scryfallCards = await scryfallSearch(userRequest, format, 15);
+  s2.remove();
+
+  // Ask AI to analyze metagame and grill the user
+  const s3 = addStatus('Analizando metagame y preparando preguntas…');
   showTyping();
 
-  const systemPrompt = `Eres un experto en Magic: The Gathering construyendo mazos competitivos para el formato ${format.toUpperCase()}.
+  const system = `Eres un experto en Magic: The Gathering y un maestro de la construcción de mazos para el formato ${format.toUpperCase()}.
 
-REGLAS ESTRICTAS:
+Tu objetivo es ayudar a construir el mejor mazo posible haciendo primero las preguntas adecuadas, como un "Grill Me" de construcción de mazos.
+
+Tienes acceso a datos reales del metagame actual:
+${metagameContext || '(sin datos de torneo disponibles, usa tu conocimiento)'}
+
+Cartas relevantes encontradas en Scryfall para la petición: ${scryfallCards.join(', ')||'(ninguna)'}
+
+INSTRUCCIONES:
+1. Analiza brevemente qué arquetipos del metagame son relevantes para la petición del usuario.
+2. Haz entre 3 y 5 preguntas concretas y útiles para afinar el mazo ANTES de construirlo. Las preguntas deben ser sobre: wincon preferida, velocidad, presupuesto, sinergias específicas, interacción con el metagame.
+3. Responde en español.
+4. Sé directo y específico. No construyas el mazo todavía.`;
+
+  const msg = metagameContext
+    ? 'El usuario quiere: '+userRequest+'\n\nAnaliza el metagame y hazle las preguntas necesarias antes de construir.'
+    : 'El usuario quiere: '+userRequest+'\n\nHazle las preguntas necesarias antes de construir.';
+
+  let reply;
+  try {
+    reply = await callGroq([{role:'user',content:msg}], system);
+  } catch(e) { removeTyping(); s3.remove(); throw e; }
+  removeTyping(); s3.remove();
+
+  conversationHistory.push({role:'user', content:userRequest});
+  conversationHistory.push({role:'assistant', content:reply});
+  awaitingGrillAnswer = true;
+
+  appendBubble('ai', '<p>'+md(reply)+'</p>');
+}
+
+// ── GRILL ME: Phase 2 — Build deck after user answers ────────────────────────
+async function grillPhase2(userAnswers) {
+  const format = currentFormat;
+  awaitingGrillAnswer = false;
+
+  // Search extra Scryfall cards based on answers
+  const s1 = addStatus('Buscando cartas específicas en Scryfall según tus respuestas…');
+  const extraCards = await scryfallSearch(userAnswers+' '+format, format, 20);
+  s1.remove();
+
+  const s2 = addStatus('Construyendo el mazo con datos reales de torneo…');
+  showTyping();
+
+  const system = `Eres un experto en Magic: The Gathering construyendo mazos para el formato ${format.toUpperCase()}.
+
+CONTEXTO DEL METAGAME REAL:
+${metagameContext||'(usa tu conocimiento del formato)'}
+
+CARTAS ADICIONALES ENCONTRADAS EN SCRYFALL:
+${extraCards.join(', ')||'(ninguna)'}
+
+REGLAS ABSOLUTAS:
+- EXACTAMENTE 60 cartas (ni una más, ni una menos).
+- Cuenta las cantidades: 4+4+4+3+3+2+2+2+2+2+4+4+4+3+3+3+4+4+1+1+... = 60.
 - Solo cartas legales en ${format}.
-- Premodern: sets entre 4th Edition (1995) y Odyssey (2001). BANNED: Tolarian Academy, Frantic Search, Yawgmoth's Will, Mystical Tutor, Demonic Tutor, Necropotence, Mind Over Matter, Windfall, Bargain, Flash, Goblin Recruiter, Mana Vault, Land Tax, Zuran Orb, Balance.
-- El mazo debe tener EXACTAMENTE 60 cartas.
-- Responde SOLO con la lista en formato "4 Nombre" una por línea. Sin texto adicional.
+- Premodern banned: Tolarian Academy, Frantic Search, Yawgmoth's Will, Mystical Tutor, Demonic Tutor, Necropotence, Mind Over Matter, Windfall, Bargain, Flash, Goblin Recruiter, Mana Vault, Land Tax, Zuran Orb, Balance.
+- Responde SOLO con la lista en formato estricto: "4 Nombre de Carta" una por línea.
+- Sin texto, sin secciones, sin comentarios. SOLO la lista.
 - Nombres de cartas en inglés.`;
 
-  const contextMsg = hasResearch
-    ? 'He encontrado estas cartas en mazos de torneo similares:\n\n' + researchRaw + '\n\nBasándote en esto y en tu conocimiento del formato ' + format + ', construye un mazo de 60 cartas para: ' + userRequest
-    : 'Construye un mazo de 60 cartas en formato ' + format + ' para: ' + userRequest;
+  const buildMsg = [
+    ...conversationHistory,
+    {role:'user', content:'Respuestas del usuario a tus preguntas: '+userAnswers+
+      '\n\nAhora construye el mazo de EXACTAMENTE 60 cartas. Antes de responder, cuenta mentalmente que suman 60. Formato estricto: "4 Nombre" una por línea.'}
+  ];
 
   let rawList;
   try {
-    rawList = await callGroq([{ role: 'user', content: contextMsg }], systemPrompt, false);
-  } catch(e) {
-    removeTyping(); s2.remove(); throw e;
-  }
+    rawList = await callGroq(buildMsg, system);
+  } catch(e) { removeTyping(); s2.remove(); throw e; }
   removeTyping(); s2.remove();
 
   let cards = parseDecklist(rawList);
+  let total = countCards(cards);
 
-  // Retry if AI gave prose
-  if (cards.length < 10) {
-    const sr = addStatus('Reformateando lista…');
+  // If not 60, ask AI to fix
+  if (total !== 60 && cards.length > 0) {
+    const sf = addStatus('Ajustando a exactamente 60 cartas (actual: '+total+')…');
     showTyping();
+    const fixMsg = [...buildMsg,
+      {role:'assistant', content:rawList},
+      {role:'user', content:'La lista tiene '+total+' cartas, no 60. Corrige sumando o quitando cartas para llegar EXACTAMENTE a 60. Devuelve SOLO la lista corregida en formato "4 Nombre" una por línea.'}
+    ];
     try {
-      const retry = await callGroq([
-        { role: 'user', content: contextMsg },
-        { role: 'assistant', content: rawList },
-        { role: 'user', content: 'Devuelve SOLO la lista en formato "4 Nombre de Carta" una por línea, sin ningún texto adicional, sin secciones, 60 cartas en total.' }
-      ], systemPrompt, false);
-      removeTyping(); sr.remove();
-      cards = parseDecklist(retry);
-      rawList = retry;
-    } catch(e) { removeTyping(); sr.remove(); }
+      const fixed = await callGroq(fixMsg, system);
+      removeTyping(); sf.remove();
+      const fixedCards = parseDecklist(fixed);
+      if (Math.abs(countCards(fixedCards)-60) < Math.abs(total-60)) {
+        cards = fixedCards; rawList = fixed; total = countCards(cards);
+      }
+    } catch(e) { removeTyping(); sf.remove(); }
   }
 
-  if (cards.length === 0) {
-    appendText('ai', 'No pude generar una lista estructurada. Intenta con algo más concreto como: <em>"mazo control azul blanco Premodern"</em>.');
-    clearStatuses();
-    return;
-  }
-
-  // PHASE 3: Validate in Scryfall
-  const s3 = addStatus('Verificando ' + cards.length + ' cartas en Scryfall…');
+  // Validate in Scryfall
+  const s3 = addStatus('Verificando '+cards.length+' cartas en Scryfall…');
   const validated = await validateList(cards, format);
   s3.remove();
 
-  const illegal = validated.filter(c => !c.ok);
-  const legal   = validated.filter(c => c.ok);
+  const illegal = validated.filter(c=>!c.ok);
+  let finalCards = validated.filter(c=>c.ok);
 
-  if (illegal.length === 0) {
-    clearStatuses();
-    legal.forEach(c => { c._isLand = isLand(c.name); });
-    conversationHistory.push({ role: 'user', content: userRequest });
-    conversationHistory.push({ role: 'assistant', content: rawList });
-    renderDecklist(legal, 'Mazo de <strong>' + format + '</strong> verificado — 100% legal:', sources);
-    return;
+  // Replace illegal cards
+  if (illegal.length > 0) {
+    const illegalNames = illegal.map(c=>c.name).join(', ');
+    const sr = addStatus('Reemplazando '+illegal.length+' carta(s) ilegal(es): '+illegalNames+'…','warn');
+    showTyping();
+    const legalSoFar = finalCards.map(c=>c.qty+' '+c.name).join('\n');
+    const replaceMsg = [...buildMsg,
+      {role:'assistant', content:rawList},
+      {role:'user', content:'CARTAS ILEGALES en '+format+': '+illegalNames+'. Sustitúyelas por alternativas legales. Cartas válidas ya confirmadas:\n'+legalSoFar+'\nCompleta a 60 cartas. Solo la lista "4 Nombre" una por línea.'}
+    ];
+    let rawList2;
+    try {
+      rawList2 = await callGroq(replaceMsg, system);
+      removeTyping(); sr.remove();
+      const cards2 = parseDecklist(rawList2);
+      const validated2 = await validateList(cards2, format);
+      finalCards = validated2.filter(c=>c.ok);
+    } catch(e) { removeTyping(); sr.remove(); }
   }
-
-  // PHASE 4: Replace illegal cards
-  const illegalNames = illegal.map(c => c.name).join(', ');
-  const s4 = addStatus('Reemplazando ' + illegal.length + ' carta(s) ilegal(es): ' + illegalNames + '…', 'warn');
-  showTyping();
-
-  const legalSoFar = legal.map(c => c.qty + ' ' + c.name).join('\n');
-  const replaceMsg = 'Estas cartas NO son legales en ' + format + ' y debes sustituirlas: ' + illegalNames + '.\n\nCartas ya válidas:\n' + legalSoFar + '\n\nCompleta hasta 60 cartas solo con cartas legales en ' + format + '. Devuelve SOLO la lista completa "4 Nombre" una por línea.';
-
-  let rawList2;
-  try {
-    rawList2 = await callGroq([
-      { role: 'user', content: contextMsg },
-      { role: 'assistant', content: rawList },
-      { role: 'user', content: replaceMsg }
-    ], systemPrompt, false);
-  } catch(e) {
-    removeTyping(); s4.remove(); throw e;
-  }
-  removeTyping(); s4.remove();
-
-  let cards2 = parseDecklist(rawList2);
-  if (cards2.length < 5) cards2 = legal;
-
-  // PHASE 5: Final validation
-  const s5 = addStatus('Verificación final en Scryfall…');
-  const validated2 = await validateList(cards2, format);
-  s5.remove();
-
-  const stillIllegal = validated2.filter(c => !c.ok);
-  const finalLegal   = validated2.filter(c => c.ok);
 
   clearStatuses();
 
-  finalLegal.forEach(c => { c._isLand = isLand(c.name); });
-  conversationHistory.push({ role: 'user', content: userRequest });
-  conversationHistory.push({ role: 'assistant', content: rawList2 });
+  conversationHistory.push({role:'user', content:userAnswers});
+  conversationHistory.push({role:'assistant', content:rawList});
 
-  const total = finalLegal.reduce((a,c)=>a+c.qty,0);
-  const intro = stillIllegal.length > 0
-    ? 'Mazo de <strong>' + format + '</strong> (' + total + ' cartas verificadas):'
-    : 'Mazo de <strong>' + format + '</strong> — 100% legal y verificado:';
+  // Render
+  finalCards.forEach(c=>{ c._isLand = isLand(c.name); });
+  const spells = finalCards.filter(c=>!c._isLand);
+  const lands  = finalCards.filter(c=>c._isLand);
+  const totalFinal = countCards(finalCards);
 
-  renderDecklist(finalLegal, intro, sources);
+  const chat = document.getElementById('chat');
+  const wrap = document.createElement('div'); wrap.className='msg ai';
+  const av = document.createElement('div'); av.className='avatar'; av.textContent='🤖';
+  const bu = document.createElement('div'); bu.className='bubble';
+
+  bu.innerHTML = '<p>Aquí tienes el mazo construido a partir de datos reales de torneo, verificado en Scryfall:</p>';
+
+  const dl = document.createElement('div'); dl.className='decklist';
+
+  function addSection(title, list) {
+    if (!list.length) return;
+    const t = document.createElement('div'); t.className='deck-section-title';
+    t.textContent = title+' ('+countCards(list)+')';
+    dl.appendChild(t);
+    list.forEach(c => {
+      const row = document.createElement('div'); row.className='card-row';
+      row.innerHTML='<span class="card-qty">'+c.qty+'x</span><span class="card-name">'+(c.name||c.scryfallName)+'</span>';
+      dl.appendChild(row);
+    });
+  }
+  addSection('Hechizos', spells);
+  addSection('Tierras', lands);
+
+  const footer = document.createElement('div');
+  footer.style.cssText='font-size:11px;color:var(--muted);margin-top:8px;text-align:right';
+  footer.textContent = totalFinal+' cartas · Scryfall ✓ · Spicerack metagame ✓';
+  dl.appendChild(footer);
+
+  bu.appendChild(dl);
+  wrap.appendChild(av); wrap.appendChild(bu);
+  chat.appendChild(wrap); chat.scrollTop=9999;
+
+  // Follow-up prompt
+  setTimeout(() => {
+    appendBubble('ai','<p>¿Qué te parece? Puedo ajustar la curva de maná, cambiar la wincon, hacer el mazo más agresivo o más controlador, o explicarte por qué incluí cada carta.</p>');
+  }, 600);
 }
 
-function isLand(name) {
-  return /plains|island|swamp|mountain|forest|land|scrubland|tundra|taiga|badlands|savannah|plateau|tropical|underground|volcanic|bayou|city of brass|gemstone|ancient tomb|wasteland|rishadan/i.test(name);
-}
-
-// ── Chat (non-deck) ───────────────────────────────────────────────────────────
+// ── Conversational reply ──────────────────────────────────────────────────────
 async function chatReply(userMessage) {
-  const sys = 'Eres un experto en Magic: The Gathering. Formato activo: ' + currentFormat.toUpperCase() + '. Responde en español de forma concisa. Nombres de cartas en negrita **Nombre**.';
+  const system = 'Eres un experto en Magic: The Gathering. Formato activo: '+currentFormat.toUpperCase()+
+    '. Responde en español, de forma concisa y útil. Usa **negrita** para nombres de cartas.'+
+    (metagameContext ? '\n\nCONTEXTO DEL METAGAME:\n'+metagameContext.slice(0,800) : '');
   showTyping();
-  const text = await callGroq([...conversationHistory, { role: 'user', content: userMessage }], sys, false);
+  const text = await callGroq([...conversationHistory,{role:'user',content:userMessage}], system);
   removeTyping();
-  conversationHistory.push({ role: 'user', content: userMessage });
-  conversationHistory.push({ role: 'assistant', content: text });
-  appendText('ai', text.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>'));
+  conversationHistory.push({role:'user',content:userMessage});
+  conversationHistory.push({role:'assistant',content:text});
+  appendBubble('ai','<p>'+md(text)+'</p>');
 }
 
+// ── Is deck request ───────────────────────────────────────────────────────────
 function isDeckRequest(text) {
-  return /mazo|deck|lista|decklist|construye|arma|dame un|quiero un|hazme|60 cartas/i.test(text);
+  return /\b(mazo|deck|lista|decklist|construye|arma|dame|quiero|hazme|build|necesito.*carta|estrategia|archetype|combo|sinerg)/i.test(text);
 }
 
 // ── Send ──────────────────────────────────────────────────────────────────────
@@ -526,13 +622,18 @@ async function sendMessage() {
   isLoading = true;
   input.value = ''; input.style.height = 'auto';
   document.getElementById('sendBtn').disabled = true;
-  appendText('user', text);
+  appendBubble('user','<p>'+text+'</p>');
   try {
-    if (isDeckRequest(text)) await buildDeck(text);
-    else await chatReply(text);
+    if (awaitingGrillAnswer) {
+      await grillPhase2(text);
+    } else if (isDeckRequest(text)) {
+      await grillPhase1(text);
+    } else {
+      await chatReply(text);
+    }
   } catch(err) {
     removeTyping(); clearStatuses();
-    appendText('ai', '<span style="color:var(--illegal)">Error: ' + err.message + '</span>');
+    appendBubble('ai','<p style="color:var(--illegal)">Error: '+err.message+'</p>');
   }
   isLoading = false;
   document.getElementById('sendBtn').disabled = false;
@@ -540,19 +641,22 @@ async function sendMessage() {
 }
 
 document.getElementById('sendBtn').addEventListener('click', sendMessage);
-document.getElementById('userInput').addEventListener('keydown', e => {
-  if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+document.getElementById('userInput').addEventListener('keydown', e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}
 });
-document.getElementById('userInput').addEventListener('input', function() {
-  this.style.height = 'auto';
-  this.style.height = Math.min(this.scrollHeight, 110) + 'px';
+document.getElementById('userInput').addEventListener('input', function(){
+  this.style.height='auto';
+  this.style.height=Math.min(this.scrollHeight,120)+'px';
 });
-document.querySelectorAll('.format-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.format-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active'); currentFormat = btn.dataset.fmt;
-    conversationHistory = []; document.getElementById('chat').innerHTML = '';
-    appendText('ai', 'Formato cambiado a <strong>' + currentFormat.toUpperCase() + '</strong>. ¿Qué mazo quieres construir?');
+document.querySelectorAll('.format-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.format-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFormat = btn.dataset.fmt;
+    currentSpiceFormat = btn.dataset.spice;
+    conversationHistory=[]; metagameContext=""; awaitingGrillAnswer=false;
+    document.getElementById('chat').innerHTML='';
+    appendBubble('ai','<p>Formato cambiado a <strong>'+currentFormat.toUpperCase()+'</strong>. Historial reiniciado.</p>');
   });
 });
 </script>
