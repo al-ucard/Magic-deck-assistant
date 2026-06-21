@@ -437,6 +437,7 @@ El ban de Parallax Tide ha reconfigurado el metagame:
 | Cabal Coffers | No es legal — es de Torment (2002)... ESPERA, Torment SÍ es legal | Cabal Coffers ES legal |
 
 ### Reglas de comportamiento aprendidas
+- verificar la legalidad de las cartas en el formato Premodern antes de recomendarlas
 - No sugerir Life from the Loam en ningún contexto de Premodern
 - Verificar siempre el set de una carta antes de recomendarla si hay dudas
 - Si el usuario corrige una carta ilegal, no sustituirla por otra carta aleatoria — preguntar qué función cubría
