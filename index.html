@@ -105,6 +105,15 @@
       <label>URL base de tu GitHub Pages</label>
       <input class="key-input" id="repoUrlInput" type="text" placeholder="https://tunombre.github.io/magic-deck-assistant" autocomplete="off" />
     </div>
+    <div class="key-section">
+      <b>GitHub Personal Access Token</b> <span style="color:var(--legal);font-size:11px">(opcional)</span><br>
+      Permite que la IA corrija el harness.md directamente.<br>
+      GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → <b>repo</b> scope
+    </div>
+    <div class="key-input-wrap">
+      <label>GitHub PAT (opcional — para editar el harness)</label>
+      <input class="key-input" id="githubPatInput" type="password" placeholder="ghp_…" autocomplete="off" />
+    </div>
     <div class="key-error" id="keyError">Revisa los datos e inténtalo de nuevo.</div>
     <button class="key-btn" id="keyBtn">Entrar →</button>
     <p class="key-note">Todo se guarda solo en tu navegador.</p>
@@ -121,6 +130,7 @@
     <div class="header-right">
       <div class="harness-dot" id="harnessDot" title="Estado del arnés"></div>
       <button class="icon-btn" onclick="reloadHarness()">↻ Arnés</button>
+      <button class="icon-btn" id="patchBtn" onclick="triggerHarnessPatch()" style="display:none" title="Guardar corrección en harness">✏️ Parchear</button>
       <button class="icon-btn" onclick="logout()">🔑</button>
     </div>
   </header>
@@ -132,96 +142,82 @@
 </div>
 
 <script>
-let groqKey = "", repoUrl = "", harness = "", conversationHistory = [], isLoading = false, awaitingGrillAnswer = false;
+let groqKey = "", repoUrl = "", harness = "", githubPat = "", conversationHistory = [], isLoading = false;
+let pendingPatch = null;
 
-// ── Keys & harness ────────────────────────────────────────────────────────────
+// ── Keys ──────────────────────────────────────────────────────────────────────
 function saveKeys() {
-  const gk = document.getElementById('groqKeyInput').value.trim();
-  const ru = document.getElementById('repoUrlInput').value.trim().replace(/\/$/, '');
+  const gk  = document.getElementById('groqKeyInput').value.trim();
+  const ru  = document.getElementById('repoUrlInput').value.trim().replace(/\/$/, '');
+  const pat = document.getElementById('githubPatInput').value.trim();
   const err = document.getElementById('keyError');
   if (!gk.startsWith('gsk_') || gk.length < 20) { err.style.display='block'; err.textContent='La key de Groq debe empezar por gsk_'; return; }
   if (!ru.startsWith('http')) { err.style.display='block'; err.textContent='Introduce la URL de tu GitHub Pages'; return; }
-  groqKey = gk; repoUrl = ru;
-  try { localStorage.setItem('groq_key', gk); localStorage.setItem('repo_url', ru); } catch(e){}
+  groqKey = gk; repoUrl = ru; githubPat = pat;
+  try { localStorage.setItem('groq_key', gk); localStorage.setItem('repo_url', ru); if (pat) localStorage.setItem('github_pat', pat); } catch(e){}
   showApp();
 }
-
 function logout() {
-  try { localStorage.removeItem('groq_key'); localStorage.removeItem('repo_url'); } catch(e){}
-  groqKey = ""; repoUrl = ""; harness = "";
+  try { localStorage.removeItem('groq_key'); localStorage.removeItem('repo_url'); localStorage.removeItem('github_pat'); } catch(e){}
+  groqKey = ""; repoUrl = ""; harness = ""; githubPat = "";
   document.getElementById('app').style.display = 'none';
   document.getElementById('keyScreen').style.display = 'flex';
-  conversationHistory = [];
+  conversationHistory = []; pendingPatch = null;
 }
-
 async function loadHarness() {
   const dot = document.getElementById('harnessDot');
   dot.className = 'harness-dot';
   try {
-    const url = repoUrl + '/harness.md?nocache=' + Date.now();
-    const r = await fetch(url);
+    const r = await fetch(repoUrl + '/harness.md?nocache=' + Date.now());
     if (!r.ok) throw new Error('HTTP ' + r.status);
     harness = await r.text();
     dot.className = 'harness-dot loaded';
     return true;
   } catch(e) {
-    dot.className = 'harness-dot';
-    addStatus('No se pudo cargar harness.md desde GitHub. Usando conocimiento base.', 'warn');
+    addStatus('No se pudo cargar harness.md. Usando conocimiento base.', 'warn');
     setTimeout(clearStatuses, 3000);
     return false;
   }
 }
-
 async function reloadHarness() {
   const s = addStatus('Recargando arnés desde GitHub…');
-  await loadHarness();
-  s.remove();
-  conversationHistory = [];
+  await loadHarness(); s.remove();
+  conversationHistory = []; pendingPatch = null;
   document.getElementById('chat').innerHTML = '';
   welcome();
 }
-
 function showApp() {
   document.getElementById('keyScreen').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
-  loadHarness().then(() => {
-    if (!document.getElementById('chat').children.length) welcome();
-  });
+  loadHarness().then(() => { if (!document.getElementById('chat').children.length) welcome(); });
 }
-
 window.addEventListener('load', () => {
   try {
     const gk = localStorage.getItem('groq_key');
     const ru = localStorage.getItem('repo_url');
+    const pat = localStorage.getItem('github_pat');
     if (gk && gk.startsWith('gsk_') && ru) {
-      groqKey = gk; repoUrl = ru;
+      groqKey = gk; repoUrl = ru; githubPat = pat || "";
       document.getElementById('groqKeyInput').value = gk;
       document.getElementById('repoUrlInput').value = ru;
+      if (pat) document.getElementById('githubPatInput').value = pat;
       showApp();
     }
   } catch(e){}
 });
-
 document.getElementById('keyBtn').addEventListener('click', saveKeys);
-['groqKeyInput','repoUrlInput'].forEach(id => {
+['groqKeyInput','repoUrlInput','githubPatInput'].forEach(id => {
   document.getElementById(id).addEventListener('keydown', e => { if(e.key==='Enter') saveKeys(); });
 });
 
-// ── UI ────────────────────────────────────────────────────────────────────────
+// ── UI helpers ────────────────────────────────────────────────────────────────
 function welcome() {
   appendBubble('ai',
-    '<p>¡Hola! Soy tu asistente de mazos de <strong>Premodern</strong> con el arnés cargado. 🃏</p>' +
-    '<p>Mi proceso cuando pidas un mazo:</p>' +
-    '<ul>' +
-    '<li>Analizo qué arquetipos del meta encajan con tu idea</li>' +
-    '<li>Te hago preguntas clave antes de construir nada</li>' +
-    '<li>Construyo por bloques explicando cada decisión</li>' +
-    '<li>Verifico cada carta en <strong>Scryfall</strong></li>' +
-    '</ul>' +
-    '<p>Cuéntame qué quieres construir.</p>'
+    '<p>¡Hola! Soy tu asistente de mazos de <strong>Premodern</strong>. 🃏</p>' +
+    '<p>Cuéntame qué quieres construir — una carta, un estilo, una idea. Exploraremos juntos.</p>' +
+    (githubPat ? '<p style="font-size:12px;color:var(--legal)">✓ Harness editable — si detecto algo incorrecto dime "corrígelo en el harness".</p>' : '')
   );
 }
-
 function appendBubble(role, html) {
   const chat = document.getElementById('chat');
   const wrap = document.createElement('div'); wrap.className = 'msg ' + role;
@@ -231,7 +227,6 @@ function appendBubble(role, html) {
   chat.appendChild(wrap); chat.scrollTop = 9999;
   return bu;
 }
-
 function addStatus(text, type) {
   type = type||'info';
   const chat = document.getElementById('chat');
@@ -251,13 +246,11 @@ function showTyping() {
   wrap.appendChild(av); wrap.appendChild(bu); chat.appendChild(wrap); chat.scrollTop=9999;
 }
 function removeTyping() { document.getElementById('typing-ind')?.remove(); }
-
 function md(text) {
   return text
     .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
     .replace(/\*(.+?)\*/g,'<em>$1</em>')
     .replace(/^#{1,3}\s+(.+)$/gm,'<strong>$1</strong>')
-    .replace(/^\|\s*(.+?)\s*\|/gm, (m) => m) // skip table lines for now
     .replace(/^[-•]\s+(.+)$/gm,'<li>$1</li>')
     .replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>')
     .replace(/\n\n+/g,'</p><p>')
@@ -272,13 +265,12 @@ async function scryfallCheck(cardName) {
     const d = await r.json();
     const s = d.legalities?.premodern;
     const name = d.name;
-    if (s==='legal')      return { ok:true,  status:'legal',  name };
+    if (s==='legal')      return { ok:true,  status:'legal',      name };
     if (s==='restricted') return { ok:true,  status:'restricted', name };
-    if (s==='banned')     return { ok:false, reason:'banned', name };
-    return                       { ok:false, reason:'not_legal', name };
+    if (s==='banned')     return { ok:false, reason:'banned',     name };
+    return                       { ok:false, reason:'not_legal',  name };
   } catch { return { ok:false, reason:'error', name:cardName }; }
 }
-
 function parseDecklist(text) {
   const cards=[]; const seen=new Set();
   for (const line of text.split('\n')) {
@@ -296,143 +288,165 @@ function parseDecklist(text) {
 }
 function countCards(c) { return c.reduce((a,x)=>a+x.qty,0); }
 function isLand(n) {
-  return /plains|island|swamp|mountain|forest|scrubland|tundra|taiga|badlands|savannah|plateau|tropical|underground|volcanic|bayou|city of brass|gemstone|ancient tomb|wasteland|rishadan|brushland|underground river|sulfurous springs|karplusan|adarkar|shivan reef|llanowar wastes|yavimaya coast|caves of koilos|battlefield forge|salt marsh|darkwater|shadowblood|sungrass|timberland|foul orchard|reflecting pool|windswept heath|flooded strand|polluted delta|bloodstained mire|wooded foothills|mishra's factory|treetop village|forbidding watchtower/i.test(n);
+  return /plains|island|swamp|mountain|forest|scrubland|tundra|taiga|badlands|savannah|plateau|tropical|underground|volcanic|bayou|city of brass|gemstone|ancient tomb|wasteland|rishadan|brushland|underground river|sulfurous springs|karplusan|adarkar|shivan reef|llanowar wastes|yavimaya coast|caves of koilos|battlefield forge|salt marsh|darkwater|shadowblood|sungrass|timberland|foul orchard|reflecting pool|windswept heath|flooded strand|polluted delta|bloodstained mire|wooded foothills|mishra.s factory|treetop village|forbidding watchtower/i.test(n);
 }
 
 // ── Groq ──────────────────────────────────────────────────────────────────────
 async function callGroq(messages, extraSystem) {
-  const system = (harness || '# Premodern Deck Building Assistant\nEres un experto en Premodern MTG.') +
-    (extraSystem ? '\n\n---\n' + extraSystem : '');
+  const system = (harness || '# Premodern MTG Assistant\nEres un experto en Premodern MTG.') +
+    (extraSystem ? '\n\n---\nINSTRUCCIÓN ADICIONAL:\n' + extraSystem : '');
   const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method:'POST',
     headers:{'Content-Type':'application/json','Authorization':'Bearer '+groqKey},
-    body: JSON.stringify({
-      model:'llama-3.3-70b-versatile',
-      max_tokens:2000,
-      messages:[{role:'system',content:system},...messages]
-    })
+    body: JSON.stringify({ model:'llama-3.3-70b-versatile', max_tokens:2000,
+      messages:[{role:'system',content:system},...messages] })
   });
   if (!resp.ok) {
     const err = await resp.json().catch(()=>({}));
     if (resp.status===401) { logout(); throw new Error('API key de Groq inválida.'); }
     throw new Error(err.error?.message||'HTTP '+resp.status);
   }
-  const data = await resp.json();
-  return data.choices?.[0]?.message?.content||"";
+  return (await resp.json()).choices?.[0]?.message?.content||"";
 }
 
-// ── Main flow ─────────────────────────────────────────────────────────────────
-async function grillPhase1(userRequest) {
-  showTyping();
-  const s = addStatus('Analizando con el arnés de Premodern…');
-
-  const extra = `INSTRUCCIÓN PARA ESTA RESPUESTA:
-El usuario ha pedido: "${userRequest}"
-
-Sigue FASE 1 y FASE 2 del harness:
-1. Identifica brevemente qué arquetipos del meta son relevantes para este pedido.
-2. Haz entre 3 y 5 preguntas concretas del "Grill Me" antes de construir.
-NO construyas el mazo todavía. Solo analiza y pregunta.`;
-
-  let reply;
+// ── GitHub harness patch ──────────────────────────────────────────────────────
+function parseRepoFromUrl(url) {
   try {
-    reply = await callGroq([{role:'user',content:userRequest}], extra);
-  } catch(e) { removeTyping(); s.remove(); throw e; }
-  removeTyping(); s.remove();
-
-  conversationHistory.push({role:'user',content:userRequest});
-  conversationHistory.push({role:'assistant',content:reply});
-  awaitingGrillAnswer = true;
-  appendBubble('ai','<p>'+md(reply)+'</p>');
+    const u = new URL(url);
+    const owner = u.hostname.split('.')[0];
+    const repo  = u.pathname.replace(/^\//, '').replace(/\/$/, '') || 'magic-deck-assistant';
+    return { owner, repo };
+  } catch { return null; }
 }
-
-async function grillPhase2(userAnswers) {
-  awaitingGrillAnswer = false;
-  const s1 = addStatus('Construyendo mazo por bloques…');
-  showTyping();
-
-  const extra = `INSTRUCCIÓN PARA ESTA RESPUESTA:
-El usuario ha respondido a tus preguntas: "${userAnswers}"
-
-Sigue FASE 3 del harness: construye el mazo por bloques visibles (Motor, Soporte, Interacción, Wincon, Tierras), explicando cada decisión.
-
-Al final, genera la lista completa en formato estricto:
-LISTA FINAL:
-4 Nombre de Carta
-3 Otro Nombre
-... (exactamente 60 cartas, cuenta antes de escribir)
-
-SIDEBOARD:
-2 Carta
-...
-(exactamente 15 cartas)`;
-
-  let reply;
-  try {
-    reply = await callGroq([...conversationHistory,{role:'user',content:userAnswers}], extra);
-  } catch(e) { removeTyping(); s1.remove(); throw e; }
-  removeTyping(); s1.remove();
-
-  conversationHistory.push({role:'user',content:userAnswers});
-  conversationHistory.push({role:'assistant',content:reply});
-
-  // Extract decklist from response
-  const listMatch = reply.match(/LISTA FINAL:?\n([\s\S]+?)(?:SIDEBOARD|$)/i);
-  const sbMatch = reply.match(/SIDEBOARD:?\n([\s\S]+?)$/i);
-
-  const cards = listMatch ? parseDecklist(listMatch[1]) : parseDecklist(reply);
-  const sbCards = sbMatch ? parseDecklist(sbMatch[1]) : [];
-
-  // Show reasoning first
-  const reasoningText = reply.replace(/LISTA FINAL[\s\S]*/i,'').trim();
-  if (reasoningText.length > 50) {
-    appendBubble('ai','<p>'+md(reasoningText)+'</p>');
+async function getHarnessSha() {
+  const { owner, repo } = parseRepoFromUrl(repoUrl);
+  const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/harness.md`,
+    { headers: { 'Authorization': 'Bearer ' + githubPat, 'Accept': 'application/vnd.github+json' } });
+  if (!r.ok) throw new Error('No se pudo leer harness.md en GitHub: ' + r.status);
+  const d = await r.json();
+  return d.sha;
+}
+async function commitHarnessPatch(newContent, reason) {
+  const { owner, repo } = parseRepoFromUrl(repoUrl);
+  const sha = await getHarnessSha();
+  const encoded = btoa(unescape(encodeURIComponent(newContent)));
+  const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/harness.md`, {
+    method:'PUT',
+    headers:{'Authorization':'Bearer '+githubPat,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
+    body: JSON.stringify({ message:'harness: '+reason.slice(0,72), content:encoded, sha })
+  });
+  if (!r.ok) { const e=await r.json().catch(()=>({})); throw new Error(e.message||'GitHub error '+r.status); }
+}
+async function requestHarnessPatch(userFeedback) {
+  if (!githubPat) {
+    appendBubble('ai','<p>Para editar el harness necesito un GitHub PAT. Añádelo en 🔑 Keys.</p>');
+    return;
   }
+  const s = addStatus('Generando corrección para el harness…'); showTyping();
+  const patchSystem = `Eres un editor del harness.md. El usuario ha detectado un error.
+Responde SOLO con JSON (sin markdown):
+{"found":true,"reason":"descripción max 72 chars","old_text":"texto literal exacto del harness a reemplazar","new_text":"texto corregido"}
+o si no puedes identificarlo:
+{"found":false,"reason":"explicación"}
 
-  if (cards.length === 0) {
-    appendBubble('ai','<p>No pude extraer la lista. Intenta pedir la lista directamente: <em>"Dame la lista completa"</em></p>');
+HARNESS ACTUAL:\n${harness.slice(0,8000)}`;
+  let reply;
+  try {
+    reply = await callGroq([...conversationHistory,{role:'user',content:'Detecta y genera el parche para: '+userFeedback}], patchSystem);
+    removeTyping(); s.remove();
+  } catch(e) { removeTyping(); s.remove(); throw e; }
+
+  let patch;
+  try { patch = JSON.parse(reply.replace(/```json|```/g,'').trim()); }
+  catch(e) { appendBubble('ai','<p>No pude generar el parche automáticamente. Edita el harness.md en GitHub directamente.</p>'); return; }
+
+  if (!patch.found) {
+    appendBubble('ai','<p>No identifiqué exactamente qué corregir: <em>'+patch.reason+'</em>. Edítalo manualmente en GitHub.</p>');
+    return;
+  }
+  if (!harness.includes(patch.old_text)) {
+    appendBubble('ai',
+      '<p>El fragmento no coincide exactamente con el harness. Corrección propuesta para aplicar manualmente:</p>'+
+      '<div style="background:#0e0e14;border-radius:7px;padding:10px;font-size:12px;margin-top:8px">'+
+      '<div style="color:#e88;margin-bottom:4px">❌ Reemplazar:</div><code>'+patch.old_text.slice(0,300).replace(/</g,'&lt;')+'</code>'+
+      '<div style="color:var(--legal);margin:8px 0 4px">✅ Por:</div><code>'+patch.new_text.slice(0,300).replace(/</g,'&lt;')+'</code></div>');
     return;
   }
 
-  // Validate
-  const s2 = addStatus('Verificando '+cards.length+' cartas en Scryfall…');
-  const validated = await Promise.all(cards.map(async c => ({...c,...(await scryfallCheck(c.name))})));
-  s2.remove();
+  pendingPatch = patch;
+  document.getElementById('patchBtn').style.display = 'inline-block';
+  appendBubble('ai',
+    '<p>Corrección preparada:</p>'+
+    '<div style="background:#0e0e14;border-radius:7px;padding:10px;font-size:12px;margin-top:8px;border-left:3px solid var(--warning)">'+
+    '<div style="color:#e88;margin-bottom:4px">❌ Eliminar:</div><code style="word-break:break-all">'+patch.old_text.slice(0,250).replace(/</g,'&lt;')+(patch.old_text.length>250?'…':'')+'</code>'+
+    '<div style="color:var(--legal);margin:8px 0 4px">✅ Sustituir por:</div><code style="word-break:break-all">'+patch.new_text.slice(0,250).replace(/</g,'&lt;')+(patch.new_text.length>250?'…':'')+'</code>'+
+    '</div>'+
+    '<p style="margin-top:8px;font-size:12px;color:var(--muted)">Pulsa <strong>✏️ Parchear</strong> para guardar en GitHub.</p>'
+  );
+}
+async function triggerHarnessPatch() {
+  if (!pendingPatch) return;
+  const btn = document.getElementById('patchBtn');
+  btn.textContent = '⏳'; btn.disabled = true;
+  try {
+    const newHarness = harness.replace(pendingPatch.old_text, pendingPatch.new_text);
+    await commitHarnessPatch(newHarness, pendingPatch.reason);
+    harness = newHarness;
+    pendingPatch = null;
+    btn.style.display = 'none'; btn.textContent = '✏️ Parchear'; btn.disabled = false;
+    document.getElementById('harnessDot').className = 'harness-dot loaded';
+    appendBubble('ai','<p>✅ Harness actualizado en GitHub. Activo en esta sesión y en futuras visitas.</p>');
+  } catch(e) {
+    btn.textContent = '✏️ Parchear'; btn.disabled = false;
+    appendBubble('ai','<p style="color:var(--illegal)">Error al guardar en GitHub: '+e.message+'<br>Comprueba que el PAT tiene permisos <strong>repo</strong>.</p>');
+  }
+}
+function isPatchRequest(text) {
+  return /harness|arnés|arnes|corrígelo|corrigelo|está mal en el|esta mal en el|actualiza el harness|guardalo en el harness|guárdalo en el harness|incorrecto en el harness/i.test(text);
+}
 
+// ── Decklist render ───────────────────────────────────────────────────────────
+function responseHasDecklist(text) { return countCards(parseDecklist(text)) >= 50; }
+
+async function renderValidatedDecklist(rawText) {
+  const listMatch = rawText.match(/LISTA FINAL:?\n([\s\S]+?)(?:SIDEBOARD|$)/i);
+  const sbMatch   = rawText.match(/SIDEBOARD:?\n([\s\S]+?)$/i);
+  const cards   = listMatch ? parseDecklist(listMatch[1]) : parseDecklist(rawText);
+  const sbCards = sbMatch   ? parseDecklist(sbMatch[1])   : [];
+  if (cards.length === 0) { appendBubble('ai','<p>No pude extraer la lista. Dime <em>"dame la lista"</em>.</p>'); return; }
+
+  const s = addStatus('Verificando '+cards.length+' cartas en Scryfall…');
+  let validated = await Promise.all(cards.map(async c => ({...c,...(await scryfallCheck(c.name))})));
+  s.remove();
   const illegal = validated.filter(c=>!c.ok);
   let finalCards = validated.filter(c=>c.ok);
 
   if (illegal.length > 0) {
-    const illegalNames = illegal.map(c=>c.name).join(', ');
-    const sr = addStatus('Corrigiendo '+illegal.length+' carta(s) ilegal(es): '+illegalNames+'…','warn');
+    const names = illegal.map(c=>c.name).join(', ');
+    const sr = addStatus('Reemplazando '+illegal.length+' carta(s) ilegal(es)…','warn');
     showTyping();
-    const fixExtra = `El usuario tiene respuestas previas. Las siguientes cartas de tu lista son ILEGALES en Premodern: ${illegalNames}. Sustitúyelas con alternativas legales y devuelve SOLO la lista completa corregida en formato "4 Nombre" una por línea, 60 cartas exactas.`;
     try {
-      const fixed = await callGroq([...conversationHistory,{role:'user',content:'Corrige las cartas ilegales: '+illegalNames}], fixExtra);
+      const fixed = await callGroq([...conversationHistory,{role:'user',content:'Corrige ilegales: '+names}],
+        `Devuelve SOLO lista corregida "4 Nombre" una por línea, 60 cartas. Ilegales a sustituir: ${names}. Legales ya confirmadas:\n${finalCards.map(c=>c.qty+' '+c.name).join('\n')}`);
       removeTyping(); sr.remove();
-      const fixedCards = parseDecklist(fixed);
-      const revalidated = await Promise.all(fixedCards.map(async c=>({...c,...(await scryfallCheck(c.name))})));
-      finalCards = revalidated.filter(c=>c.ok);
+      const v2 = await Promise.all(parseDecklist(fixed).map(async c=>({...c,...(await scryfallCheck(c.name))})));
+      finalCards = v2.filter(c=>c.ok);
     } catch(e) { removeTyping(); sr.remove(); }
   }
-
   clearStatuses();
 
-  // Render decklist
   finalCards.forEach(c=>{ c._isLand=isLand(c.name); });
   const spells = finalCards.filter(c=>!c._isLand);
   const lands  = finalCards.filter(c=>c._isLand);
-  const total  = countCards(finalCards);
 
   const chat = document.getElementById('chat');
   const wrap = document.createElement('div'); wrap.className='msg ai';
   const av = document.createElement('div'); av.className='avatar'; av.textContent='🤖';
   const bu = document.createElement('div'); bu.className='bubble';
-  bu.innerHTML='<p>Mazo <strong>Premodern</strong> verificado en Scryfall:</p>';
-
+  bu.innerHTML='<p>Mazo <strong>Premodern</strong> — verificado en Scryfall:</p>';
   const dl = document.createElement('div'); dl.className='decklist';
 
-  function addSection(title, list) {
+  function addSec(title, list) {
     if (!list.length) return;
     const t = document.createElement('div'); t.className='deck-section-title';
     t.textContent=title+' ('+countCards(list)+')'; dl.appendChild(t);
@@ -442,19 +456,14 @@ SIDEBOARD:
       dl.appendChild(row);
     });
   }
-  addSection('Hechizos', spells);
-  addSection('Tierras', lands);
-
+  addSec('Hechizos', spells); addSec('Tierras', lands);
   const footer = document.createElement('div');
   footer.style.cssText='font-size:11px;color:var(--muted);margin-top:8px;text-align:right';
-  footer.textContent=total+' cartas · Scryfall ✓';
-  dl.appendChild(footer);
+  footer.textContent=countCards(finalCards)+' cartas · Scryfall ✓'; dl.appendChild(footer);
 
-  // Sideboard
   if (sbCards.length > 0) {
     const sbt = document.createElement('div'); sbt.className='deck-section-title';
-    sbt.style.marginTop='12px'; sbt.textContent='Sideboard ('+countCards(sbCards)+')';
-    dl.appendChild(sbt);
+    sbt.style.marginTop='12px'; sbt.textContent='Sideboard ('+countCards(sbCards)+')'; dl.appendChild(sbt);
     sbCards.forEach(c => {
       const row = document.createElement('div'); row.className='card-row';
       row.style.borderLeftColor='var(--muted)';
@@ -462,30 +471,11 @@ SIDEBOARD:
       dl.appendChild(row);
     });
   }
-
-  bu.appendChild(dl);
-  wrap.appendChild(av); wrap.appendChild(bu);
+  bu.appendChild(dl); wrap.appendChild(av); wrap.appendChild(bu);
   chat.appendChild(wrap); chat.scrollTop=9999;
-
-  setTimeout(()=>{
-    appendBubble('ai','<p>¿Qué te parece? Puedo ajustar la curva, cambiar la wincon, explicar por qué incluí cada carta, o construir el sideboard si no te convence el actual.</p>');
-  }, 500);
 }
 
-async function chatReply(msg) {
-  showTyping();
-  const extra = 'INSTRUCCIÓN: El usuario hace una pregunta o comentario. Responde de forma concisa y útil usando el contexto del harness. Usa **negrita** para nombres de cartas.';
-  const text = await callGroq([...conversationHistory,{role:'user',content:msg}], extra);
-  removeTyping();
-  conversationHistory.push({role:'user',content:msg});
-  conversationHistory.push({role:'assistant',content:text});
-  appendBubble('ai','<p>'+md(text)+'</p>');
-}
-
-function isDeckRequest(t) {
-  return /\b(mazo|deck|lista|decklist|construye|arma|dame|quiero|hazme|build|necesito.*carta|estrategia|arquetipo|combo|sinerg|60 cartas)/i.test(t);
-}
-
+// ── Send ──────────────────────────────────────────────────────────────────────
 async function sendMessage() {
   const input = document.getElementById('userInput');
   const text = input.value.trim();
@@ -494,17 +484,52 @@ async function sendMessage() {
   input.value = ''; input.style.height = 'auto';
   document.getElementById('sendBtn').disabled = true;
   appendBubble('user','<p>'+text+'</p>');
-  try {
-    if (awaitingGrillAnswer) await grillPhase2(text);
-    else if (isDeckRequest(text)) await grillPhase1(text);
-    else await chatReply(text);
-  } catch(err) {
-    removeTyping(); clearStatuses();
-    appendBubble('ai','<p style="color:var(--illegal)">Error: '+err.message+'</p>');
+
+  // Harness patch request
+  if (isPatchRequest(text)) {
+    try { await requestHarnessPatch(text); }
+    catch(e) { appendBubble('ai','<p style="color:var(--illegal)">Error: '+e.message+'</p>'); }
+    isLoading = false; document.getElementById('sendBtn').disabled = false; input.focus();
+    return;
   }
-  isLoading = false;
-  document.getElementById('sendBtn').disabled = false;
-  input.focus();
+
+  conversationHistory.push({role:'user',content:text});
+  showTyping();
+  const s = addStatus('Pensando…');
+
+  const isFirst = conversationHistory.filter(m=>m.role==='user').length === 1;
+  const wantsList = /^(dame|construye|hazme|lista|genera|ya está|adelante|perfecto|venga|ok,?\s*construye|listo)/i.test(text.trim());
+
+  const extra = wantsList
+    ? `El usuario quiere la lista final. Construye por bloques (Motor, Soporte, Interacción, Wincon, Tierras) explicando brevemente cada uno. Al final incluye:\n\nLISTA FINAL:\n4 Nombre\n... (EXACTAMENTE 60 cartas)\n\nSIDEBOARD:\n2 Carta\n... (exactamente 15 cartas)`
+    : isFirst
+    ? `Primera interacción. Sigue el PRINCIPIO FUNDAMENTAL del harness: reacciona a su idea, explora qué existe en el formato, presenta opciones concretas con implicaciones, detecta huecos. NO hagas un cuestionario. Piensa en voz alta con él.`
+    : `Continúa la conversación reactiva. Si hay huecos sin resolver, señálalos. Si el usuario menciona cartas ilegales, corrígelas al momento. Si el esquema está suficientemente definido, propón pasar a construir.`;
+
+  let reply;
+  try {
+    reply = await callGroq(conversationHistory, extra);
+  } catch(e) {
+    removeTyping(); s.remove(); clearStatuses();
+    appendBubble('ai','<p style="color:var(--illegal)">Error: '+e.message+'</p>');
+    conversationHistory.pop();
+    isLoading = false; document.getElementById('sendBtn').disabled = false; input.focus();
+    return;
+  }
+
+  removeTyping(); s.remove();
+  conversationHistory.push({role:'assistant',content:reply});
+
+  if (responseHasDecklist(reply)) {
+    const reasoning = reply.replace(/LISTA FINAL[\s\S]*/i,'').trim();
+    if (reasoning.length > 80) appendBubble('ai','<p>'+md(reasoning)+'</p>');
+    await renderValidatedDecklist(reply);
+  } else {
+    appendBubble('ai','<p>'+md(reply)+'</p>');
+  }
+
+  clearStatuses();
+  isLoading = false; document.getElementById('sendBtn').disabled = false; input.focus();
 }
 
 document.getElementById('sendBtn').addEventListener('click', sendMessage);
@@ -514,6 +539,15 @@ document.getElementById('userInput').addEventListener('keydown', e=>{
 document.getElementById('userInput').addEventListener('input', function(){
   this.style.height='auto';
   this.style.height=Math.min(this.scrollHeight,120)+'px';
+});
+document.querySelectorAll('.format-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.format-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    conversationHistory=[]; pendingPatch=null;
+    document.getElementById('chat').innerHTML='';
+    appendBubble('ai','<p>Historial reiniciado. ¿Qué quieres construir?</p>');
+  });
 });
 </script>
 </body>
