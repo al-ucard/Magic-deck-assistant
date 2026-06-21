@@ -180,7 +180,9 @@ async function reloadHarness() {
 function showApp() {
   document.getElementById('keyScreen').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
-  loadHarness().then(() => { if (!document.getElementById('chat').children.length) welcome(); });
+  // Always show welcome immediately, harness loads in background
+  welcome();
+  loadHarness();
 }
 window.addEventListener('load', () => {
   try {
@@ -202,6 +204,7 @@ document.getElementById('keyBtn').addEventListener('click', saveKeys);
 
 // ── UI helpers ────────────────────────────────────────────────────────────────
 function welcome() {
+  document.getElementById('chat').innerHTML = '';
   appendBubble('ai',
     '<p>¡Hola! Soy tu asistente de mazos de <strong>Premodern</strong>. 🃏</p>' +
     '<p>Cuéntame qué quieres construir — una carta, un estilo, una idea. Exploraremos juntos.</p>' +
