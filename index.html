@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Magic Deck Assistant — Premodern</title>
+<title>Premodern Deck Assistant</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@400;500&display=swap');
   :root {
@@ -12,7 +12,6 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
-
   #keyScreen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:100;overflow-y:auto}
   .key-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 24px;width:100%;max-width:420px;display:flex;flex-direction:column;gap:14px}
   .key-logo{font-family:'Cinzel',serif;font-size:20px;color:var(--gold);text-align:center}
@@ -24,21 +23,18 @@
   .key-input{background:#0e0e12;border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:monospace;font-size:13px;padding:10px 12px;outline:none;width:100%;transition:border-color .15s}
   .key-input:focus{border-color:var(--gold-dim)}
   .key-input::placeholder{color:var(--muted);font-family:'Inter',sans-serif}
-  .key-btn{background:var(--gold);border:none;border-radius:var(--radius);color:#0e0e12;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;padding:12px;cursor:pointer;transition:opacity .15s}
-  .key-btn:hover{opacity:.85}
+  .key-btn{background:var(--gold);border:none;border-radius:var(--radius);color:#0e0e12;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;padding:12px;cursor:pointer}
   .key-note{font-size:11px;color:var(--muted);text-align:center}
   .key-error{font-size:12px;color:var(--illegal);text-align:center;display:none}
-
   #app{display:none;flex-direction:column;height:100dvh}
   header{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
   .header-icon{width:34px;height:34px;background:linear-gradient(135deg,#7b2d2d,#c9a84c);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
   header h1{font-family:'Cinzel',serif;font-size:14px;color:var(--gold)}
   header p{font-size:11px;color:var(--muted)}
   .header-right{margin-left:auto;display:flex;gap:6px;align-items:center}
-  .icon-btn{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:4px 8px;border-radius:6px;cursor:pointer;flex-shrink:0;white-space:nowrap}
+  .icon-btn{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:4px 8px;border-radius:6px;cursor:pointer;white-space:nowrap}
   .harness-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex-shrink:0}
   .harness-dot.loaded{background:var(--legal)}
-
   #chat{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
   .msg{display:flex;gap:8px;animation:fadeIn .2s ease}
   .msg.user{flex-direction:row-reverse}
@@ -52,34 +48,28 @@
   .bubble strong{color:var(--gold)}
   .bubble ul{margin:6px 0 0 16px}
   .bubble ul li{margin-bottom:3px}
-  .bubble table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
-  .bubble th{background:#0e0e14;padding:5px 8px;text-align:left;color:var(--muted);font-weight:500}
-  .bubble td{padding:4px 8px;border-top:1px solid var(--border)}
-
   .decklist{margin-top:10px;display:flex;flex-direction:column;gap:4px}
   .deck-section-title{font-size:11px;color:var(--muted);margin:8px 0 2px;text-transform:uppercase;letter-spacing:.05em}
   .card-row{display:flex;align-items:center;gap:8px;background:#0e0e14;border-radius:6px;padding:5px 9px;border:1px solid var(--border);font-size:13px;border-left:3px solid var(--legal)}
   .card-qty{color:var(--muted);font-size:12px;min-width:22px}
   .card-name{flex:1;font-weight:500}
-
   .status-bubble{background:#0e0e14;border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px;margin-left:36px;animation:fadeIn .2s ease}
   .status-bubble .spin{display:inline-block;animation:spin 1.2s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
   .status-bubble.done{color:var(--legal);border-color:#1a3d2a}
   .status-bubble.warn{color:var(--warning);border-color:#3d2e0a}
-
   .typing{display:flex;gap:4px;align-items:center;padding:4px 0}
   .typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce .9s infinite}
   .typing span:nth-child(2){animation-delay:.15s}
   .typing span:nth-child(3){animation-delay:.3s}
   @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
-
   .input-area{background:var(--surface);border-top:1px solid var(--border);padding:10px 14px;display:flex;gap:8px;flex-shrink:0}
   #userInput{flex:1;background:#0e0e12;border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:10px 12px;resize:none;min-height:44px;max-height:120px;outline:none;transition:border-color .15s;line-height:1.4}
   #userInput:focus{border-color:var(--gold-dim)}
   #userInput::placeholder{color:var(--muted)}
   #sendBtn{background:var(--gold);border:none;border-radius:var(--radius);width:44px;height:44px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;align-self:flex-end;transition:opacity .15s}
   #sendBtn:disabled{opacity:.4;cursor:not-allowed}
+  .patch-preview{background:#0e0e14;border-radius:7px;padding:10px;font-size:12px;margin-top:8px}
 </style>
 </head>
 <body>
@@ -90,25 +80,23 @@
     <div class="key-section">
       <b>API key de Groq (gratis)</b><br>
       1. Ve a <a href="https://console.groq.com" target="_blank">console.groq.com</a><br>
-      2. Regístrate → API Keys → Create key<br>
-      <a href="https://console.groq.com/docs/quickstart" target="_blank" style="font-size:11px;color:var(--gold)">📖 Guía paso a paso →</a>
+      2. Regístrate &rarr; API Keys &rarr; Create key<br>
+      <a href="https://console.groq.com/docs/quickstart" target="_blank" style="font-size:11px;color:var(--gold)">📖 Guía paso a paso &rarr;</a>
     </div>
     <div class="key-input-wrap">
       <label>Groq API Key</label>
       <input class="key-input" id="groqKeyInput" type="password" placeholder="gsk_…" autocomplete="off" />
     </div>
-
     <div class="key-section">
-      <b>GitHub Personal Access Token</b> <span style="color:var(--legal);font-size:11px">(opcional)</span><br>
-      Permite que la IA corrija el harness.md directamente.<br>
-      GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → <b>repo</b> scope
+      <b>GitHub PAT</b> <span style="color:var(--legal);font-size:11px">(opcional — para corregir el harness)</span><br>
+      GitHub &rarr; Settings &rarr; Developer settings &rarr; Personal access tokens &rarr; Tokens (classic) &rarr; scope <b>repo</b>
     </div>
     <div class="key-input-wrap">
-      <label>GitHub PAT (opcional — para editar el harness)</label>
+      <label>GitHub Personal Access Token (opcional)</label>
       <input class="key-input" id="githubPatInput" type="password" placeholder="ghp_…" autocomplete="off" />
     </div>
-    <div class="key-error" id="keyError">Revisa los datos e inténtalo de nuevo.</div>
-    <button class="key-btn" id="keyBtn">Entrar →</button>
+    <div class="key-error" id="keyError"></div>
+    <button class="key-btn" onclick="saveKeys()">Entrar &rarr;</button>
     <p class="key-note">Todo se guarda solo en tu navegador.</p>
   </div>
 </div>
@@ -121,535 +109,493 @@
       <p>Groq · Llama 3.3 · Scryfall</p>
     </div>
     <div class="header-right">
-      <div class="harness-dot" id="harnessDot" title="Estado del arnés"></div>
-      <button class="icon-btn" onclick="reloadHarness()">↻ Arnés</button>
-      <button class="icon-btn" id="patchBtn" onclick="triggerHarnessPatch()" style="display:none" title="Guardar corrección en harness">✏️ Parchear</button>
-      <button class="icon-btn" onclick="logout()">🔑</button>
+      <div class="harness-dot" id="harnessDot" title="Estado del harness"></div>
+      <button class="icon-btn" onclick="reloadHarness()">&#8635; Harness</button>
+      <button class="icon-btn" id="patchBtn" onclick="triggerHarnessPatch()" style="display:none">&#9998; Guardar</button>
+      <button class="icon-btn" onclick="logout()">&#128273;</button>
     </div>
   </header>
   <div id="chat"></div>
   <div class="input-area">
     <textarea id="userInput" rows="1" placeholder="Cuéntame qué mazo quieres construir…"></textarea>
-    <button id="sendBtn">➤</button>
+    <button id="sendBtn" onclick="sendMessage()">&#10148;</button>
   </div>
 </div>
 
 <script>
-let groqKey = "", harness = "", githubPat = "", conversationHistory = [], isLoading = false;
-let pendingPatch = null;
+var groqKey = '', githubPat = '', harness = '';
+var conversationHistory = [];
+var isLoading = false;
+var pendingPatch = null;
 
-// ── Keys ──────────────────────────────────────────────────────────────────────
 function saveKeys() {
-  const gk  = document.getElementById('groqKeyInput').value.trim();
-  const pat = document.getElementById('githubPatInput').value.trim();
-  const err = document.getElementById('keyError');
-  if (!gk.startsWith('gsk_') || gk.length < 20) { err.style.display='block'; err.textContent='La key de Groq debe empezar por gsk_'; return; }
-  groqKey = gk; githubPat = pat;
-  try { localStorage.setItem('groq_key', gk); if (pat) localStorage.setItem('github_pat', pat); } catch(e){}
+  var gk = document.getElementById('groqKeyInput').value.trim();
+  var pat = document.getElementById('githubPatInput').value.trim();
+  var err = document.getElementById('keyError');
+  err.style.display = 'none';
+  if (!gk || gk.length < 10) {
+    err.textContent = 'Introduce tu API key de Groq (empieza por gsk_)';
+    err.style.display = 'block';
+    return;
+  }
+  groqKey = gk;
+  githubPat = pat;
+  try { localStorage.setItem('groq_key', gk); if (pat) localStorage.setItem('github_pat', pat); } catch(e) {}
   showApp();
 }
+
 function logout() {
-  try { localStorage.removeItem('groq_key'); localStorage.removeItem('github_pat'); } catch(e){}
-  groqKey = ""; harness = ""; githubPat = "";
+  try { localStorage.removeItem('groq_key'); localStorage.removeItem('github_pat'); } catch(e) {}
+  groqKey = ''; githubPat = ''; harness = '';
+  conversationHistory = []; pendingPatch = null;
   document.getElementById('app').style.display = 'none';
   document.getElementById('keyScreen').style.display = 'flex';
-  conversationHistory = []; pendingPatch = null;
 }
-async function loadHarness() {
-  const dot = document.getElementById('harnessDot');
-  dot.className = 'harness-dot';
-  try {
-    const r = await fetch('./harness.md?nocache=' + Date.now());
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    harness = await r.text();
-    dot.className = 'harness-dot loaded';
-    return true;
-  } catch(e) {
-    addStatus('No se pudo cargar harness.md. Usando conocimiento base.', 'warn');
-    setTimeout(clearStatuses, 3000);
-    return false;
-  }
-}
-async function reloadHarness() {
-  const s = addStatus('Recargando arnés desde GitHub…');
-  await loadHarness(); s.remove();
-  conversationHistory = []; pendingPatch = null;
-  document.getElementById('chat').innerHTML = '';
-  welcome();
-}
+
 function showApp() {
   document.getElementById('keyScreen').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
-  // Always show welcome immediately, harness loads in background
   welcome();
   loadHarness();
 }
-window.addEventListener('load', () => {
+
+window.addEventListener('load', function() {
   try {
-    const gk = localStorage.getItem('groq_key');
-    const ru = localStorage.getItem('repo_url');
-    const pat = localStorage.getItem('github_pat');
-    if (gk && gk.startsWith('gsk_')) {
-      groqKey = gk; githubPat = pat || "";
+    var gk = localStorage.getItem('groq_key');
+    var pat = localStorage.getItem('github_pat');
+    if (gk && gk.length > 10) {
+      groqKey = gk;
+      githubPat = pat || '';
       document.getElementById('groqKeyInput').value = gk;
       if (pat) document.getElementById('githubPatInput').value = pat;
       showApp();
     }
-  } catch(e){}
-});
-document.getElementById('keyBtn').addEventListener('click', saveKeys);
-['groqKeyInput','githubPatInput'].forEach(id => {
-  document.getElementById(id).addEventListener('keydown', e => { if(e.key==='Enter') saveKeys(); });
+  } catch(e) {}
 });
 
-// ── UI helpers ────────────────────────────────────────────────────────────────
+document.getElementById('groqKeyInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') saveKeys(); });
+document.getElementById('githubPatInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') saveKeys(); });
+
+// ── Harness ───────────────────────────────────────────────────────────────────
+async function loadHarness() {
+  var dot = document.getElementById('harnessDot');
+  dot.className = 'harness-dot';
+  try {
+    var r = await fetch('./harness.md?nocache=' + Date.now());
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    harness = await r.text();
+    dot.className = 'harness-dot loaded';
+  } catch(e) {
+    var s = addStatus('No se pudo cargar harness.md — usando conocimiento base.', 'warn');
+    setTimeout(function() { s.remove(); }, 3000);
+  }
+}
+
+async function reloadHarness() {
+  conversationHistory = []; pendingPatch = null;
+  document.getElementById('chat').innerHTML = '';
+  welcome();
+  await loadHarness();
+}
+
+// ── UI ────────────────────────────────────────────────────────────────────────
 function welcome() {
   document.getElementById('chat').innerHTML = '';
   appendBubble('ai',
     '<p>¡Hola! Soy tu asistente de mazos de <strong>Premodern</strong>. 🃏</p>' +
-    '<p>Cuéntame qué quieres construir — una carta, un estilo, una idea. Exploraremos juntos.</p>' +
-    (githubPat ? '<p style="font-size:12px;color:var(--legal)">✓ Harness editable — si detecto algo incorrecto dime "corrígelo en el harness".</p>' : '')
+    '<p>Cuéntame qué quieres construir — una carta, un estilo, una idea — y exploraremos juntos.</p>' +
+    (githubPat ? '<p style="font-size:12px;color:var(--legal)">✓ Harness editable — si algo está mal dime "corrígelo en el harness".</p>' : '')
   );
 }
+
 function appendBubble(role, html) {
-  const chat = document.getElementById('chat');
-  const wrap = document.createElement('div'); wrap.className = 'msg ' + role;
-  const av = document.createElement('div'); av.className = 'avatar'; av.textContent = role==='user'?'🧙':'🤖';
-  const bu = document.createElement('div'); bu.className = 'bubble'; bu.innerHTML = html;
+  var chat = document.getElementById('chat');
+  var wrap = document.createElement('div'); wrap.className = 'msg ' + role;
+  var av = document.createElement('div'); av.className = 'avatar'; av.textContent = role === 'user' ? '🧙' : '🤖';
+  var bu = document.createElement('div'); bu.className = 'bubble'; bu.innerHTML = html;
   wrap.appendChild(av); wrap.appendChild(bu);
   chat.appendChild(wrap); chat.scrollTop = 9999;
   return bu;
 }
+
 function addStatus(text, type) {
-  type = type||'info';
-  const chat = document.getElementById('chat');
-  const el = document.createElement('div');
-  el.className = 'status-bubble'+(type==='done'?' done':type==='warn'?' warn':'');
-  el.innerHTML = (type==='info'?'<span class="spin">⚙️</span> ':type==='done'?'✅ ':'⚠️ ') + text;
+  type = type || 'info';
+  var chat = document.getElementById('chat');
+  var el = document.createElement('div');
+  el.className = 'status-bubble' + (type === 'done' ? ' done' : type === 'warn' ? ' warn' : '');
+  el.innerHTML = (type === 'info' ? '<span class="spin">⚙️</span> ' : type === 'done' ? '✅ ' : '⚠️ ') + text;
   chat.appendChild(el); chat.scrollTop = 9999;
   return el;
 }
-function clearStatuses() { document.querySelectorAll('.status-bubble').forEach(e=>e.remove()); }
+
+function clearStatuses() { document.querySelectorAll('.status-bubble').forEach(function(e) { e.remove(); }); }
+
 function showTyping() {
-  const chat = document.getElementById('chat');
-  const wrap = document.createElement('div'); wrap.className='msg ai'; wrap.id='typing-ind';
-  const av = document.createElement('div'); av.className='avatar'; av.textContent='🤖';
-  const bu = document.createElement('div'); bu.className='bubble';
-  bu.innerHTML='<div class="typing"><span></span><span></span><span></span></div>';
-  wrap.appendChild(av); wrap.appendChild(bu); chat.appendChild(wrap); chat.scrollTop=9999;
+  var chat = document.getElementById('chat');
+  var wrap = document.createElement('div'); wrap.className = 'msg ai'; wrap.id = 'typing-ind';
+  var av = document.createElement('div'); av.className = 'avatar'; av.textContent = '🤖';
+  var bu = document.createElement('div'); bu.className = 'bubble';
+  bu.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+  wrap.appendChild(av); wrap.appendChild(bu); chat.appendChild(wrap); chat.scrollTop = 9999;
 }
-function removeTyping() { document.getElementById('typing-ind')?.remove(); }
+
+function removeTyping() { var t = document.getElementById('typing-ind'); if (t) t.remove(); }
+
 function md(text) {
   return text
-    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g,'<em>$1</em>')
-    .replace(/^#{1,3}\s+(.+)$/gm,'<strong>$1</strong>')
-    .replace(/^[-•]\s+(.+)$/gm,'<li>$1</li>')
-    .replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>')
-    .replace(/\n\n+/g,'</p><p>')
-    .replace(/\n/g,'<br>');
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/^#{1,3}\s+(.+)$/gm, '<strong>$1</strong>')
+    .replace(/^[-•]\s+(.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>')
+    .replace(/\n\n+/g, '</p><p>')
+    .replace(/\n/g, '<br>');
 }
 
 // ── Scryfall ──────────────────────────────────────────────────────────────────
 async function scryfallCheck(cardName) {
   try {
-    const r = await fetch('https://api.scryfall.com/cards/named?fuzzy='+encodeURIComponent(cardName));
-    if (!r.ok) return { ok:false, reason:'not_found', name:cardName };
-    const d = await r.json();
-    const s = d.legalities?.premodern;
-    const name = d.name;
-    if (s==='legal')      return { ok:true,  status:'legal',      name };
-    if (s==='restricted') return { ok:true,  status:'restricted', name };
-    if (s==='banned')     return { ok:false, reason:'banned',     name };
-    return                       { ok:false, reason:'not_legal',  name };
-  } catch { return { ok:false, reason:'error', name:cardName }; }
+    var r = await fetch('https://api.scryfall.com/cards/named?fuzzy=' + encodeURIComponent(cardName));
+    if (!r.ok) return { ok: false, reason: 'not_found', name: cardName };
+    var d = await r.json();
+    var s = d.legalities && d.legalities.premodern;
+    var name = d.name;
+    if (s === 'legal')      return { ok: true,  status: 'legal',      name: name };
+    if (s === 'restricted') return { ok: true,  status: 'restricted', name: name };
+    if (s === 'banned')     return { ok: false, reason: 'banned',     name: name };
+    return                         { ok: false, reason: 'not_legal',  name: name };
+  } catch(e) { return { ok: false, reason: 'error', name: cardName }; }
 }
+
 function parseDecklist(text) {
-  const cards=[]; const seen=new Set();
-  for (const line of text.split('\n')) {
-    const m = line.trim().match(/^(\d+)x?\s+(.+)$/);
+  var cards = [], seen = {};
+  var lines = text.split('\n');
+  for (var i = 0; i < lines.length; i++) {
+    var m = lines[i].trim().match(/^(\d+)x?\s+(.+)$/);
     if (m) {
-      const qty = parseInt(m[1]);
-      const name = m[2].replace(/\*\*/g,'').replace(/\s*\(.*$/,'').replace(/\s*\/\/.*$/,'').trim();
-      if (qty>0 && qty<=4 && name.length>1 && !seen.has(name.toLowerCase()) &&
-          !/^(total|lands|spells|creatures|sideboard|maindeck|hechizos|tierras|criaturas|instant|sorcery|enchantment|artifact)/i.test(name)) {
-        seen.add(name.toLowerCase()); cards.push({qty,name});
+      var qty = parseInt(m[1]);
+      var name = m[2].replace(/\*\*/g, '').replace(/\s*\([^)]*\).*$/, '').replace(/\s*\/\/.*$/, '').trim();
+      var key = name.toLowerCase();
+      if (qty > 0 && qty <= 4 && name.length > 1 && !seen[key] &&
+          !/^(total|lands|spells|creatures|sideboard|maindeck|hechizos|tierras|criaturas)/i.test(name)) {
+        seen[key] = true;
+        cards.push({ qty: qty, name: name });
       }
     }
   }
   return cards;
 }
-function countCards(c) { return c.reduce((a,x)=>a+x.qty,0); }
+
+function countCards(cards) { return cards.reduce(function(a, c) { return a + c.qty; }, 0); }
+
 function isLand(n) {
-  return /plains|island|swamp|mountain|forest|scrubland|tundra|taiga|badlands|savannah|plateau|tropical|underground|volcanic|bayou|city of brass|gemstone|ancient tomb|wasteland|rishadan|brushland|underground river|sulfurous springs|karplusan|adarkar|shivan reef|llanowar wastes|yavimaya coast|caves of koilos|battlefield forge|salt marsh|darkwater|shadowblood|sungrass|timberland|foul orchard|reflecting pool|windswept heath|flooded strand|polluted delta|bloodstained mire|wooded foothills|mishra.s factory|treetop village|forbidding watchtower/i.test(n);
+  return /plains|island|swamp|mountain|forest|city of brass|gemstone|ancient tomb|wasteland|rishadan|brushland|underground river|sulfurous springs|karplusan|adarkar|shivan reef|llanowar wastes|yavimaya coast|caves of koilos|battlefield forge|salt marsh|darkwater|shadowblood|sungrass|timberland|foul orchard|reflecting pool|windswept heath|flooded strand|polluted delta|bloodstained mire|wooded foothills|mishra|treetop village|forbidding watchtower/i.test(n);
 }
 
 // ── Groq ──────────────────────────────────────────────────────────────────────
 async function callGroq(messages, extraSystem) {
-  const system = (harness || '# Premodern MTG Assistant\nEres un experto en Premodern MTG.') +
-    (extraSystem ? '\n\n---\nINSTRUCCIÓN ADICIONAL:\n' + extraSystem : '');
-  const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+groqKey},
-    body: JSON.stringify({ model:'llama-3.3-70b-versatile', max_tokens:2000,
-      messages:[{role:'system',content:system},...messages] })
+  var system = (harness || '# Premodern MTG\nEres un experto en Premodern MTG. Responde en español.') +
+    (extraSystem ? '\n\n---\nINSTRUCCIÓN:\n' + extraSystem : '');
+  var resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + groqKey },
+    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', max_tokens: 2000,
+      messages: [{ role: 'system', content: system }].concat(messages) })
   });
   if (!resp.ok) {
-    const err = await resp.json().catch(()=>({}));
-    if (resp.status===401) { logout(); throw new Error('API key de Groq inválida.'); }
-    throw new Error(err.error?.message||'HTTP '+resp.status);
+    var err = await resp.json().catch(function() { return {}; });
+    if (resp.status === 401) { logout(); throw new Error('API key de Groq inválida.'); }
+    throw new Error((err.error && err.error.message) || 'HTTP ' + resp.status);
   }
-  return (await resp.json()).choices?.[0]?.message?.content||"";
+  var data = await resp.json();
+  return (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
 }
 
 // ── GitHub harness patch ──────────────────────────────────────────────────────
-function parseRepoFromUrl() {
+function parseRepo() {
   try {
-    const u = new URL(window.location.href);
-    const owner = u.hostname.split('.')[0];
-    const repo  = u.pathname.replace(/^\//, '').split('/')[0] || 'magic-deck-assistant';
-    return { owner, repo };
-  } catch { return null; }
+    var u = new URL(window.location.href);
+    var owner = u.hostname.split('.')[0];
+    var parts = u.pathname.replace(/^\//, '').split('/');
+    var repo = parts[0] || 'magic-deck-assistant';
+    return { owner: owner, repo: repo };
+  } catch(e) { return null; }
 }
+
 async function getHarnessSha() {
-  const { owner, repo } = parseRepoFromUrl();
-  const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/harness.md`,
-    { headers: { 'Authorization': 'Bearer ' + githubPat, 'Accept': 'application/vnd.github+json' } });
+  var rp = parseRepo();
+  var r = await fetch('https://api.github.com/repos/' + rp.owner + '/' + rp.repo + '/contents/harness.md', {
+    headers: { 'Authorization': 'Bearer ' + githubPat, 'Accept': 'application/vnd.github+json' }
+  });
   if (!r.ok) throw new Error('No se pudo leer harness.md en GitHub: ' + r.status);
-  const d = await r.json();
+  var d = await r.json();
   return d.sha;
 }
+
 async function commitHarnessPatch(newContent, reason) {
-  const { owner, repo } = parseRepoFromUrl();
-  const sha = await getHarnessSha();
-  const encoded = btoa(unescape(encodeURIComponent(newContent)));
-  const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/harness.md`, {
-    method:'PUT',
-    headers:{'Authorization':'Bearer '+githubPat,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
-    body: JSON.stringify({ message:'harness: '+reason.slice(0,72), content:encoded, sha })
+  var rp = parseRepo();
+  var sha = await getHarnessSha();
+  var encoded = btoa(unescape(encodeURIComponent(newContent)));
+  var r = await fetch('https://api.github.com/repos/' + rp.owner + '/' + rp.repo + '/contents/harness.md', {
+    method: 'PUT',
+    headers: { 'Authorization': 'Bearer ' + githubPat, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: 'harness: ' + reason.slice(0, 72), content: encoded, sha: sha })
   });
-  if (!r.ok) { const e=await r.json().catch(()=>({})); throw new Error(e.message||'GitHub error '+r.status); }
+  if (!r.ok) { var e = await r.json().catch(function() { return {}; }); throw new Error(e.message || 'GitHub error ' + r.status); }
 }
+
 async function requestHarnessPatch(userFeedback) {
   if (!githubPat) {
-    appendBubble('ai','<p>Para editar el harness necesito un GitHub PAT. Añádelo en 🔑 Keys.</p>');
+    appendBubble('ai', '<p>Para editar el harness necesito un GitHub PAT. Añádelo en 🔑.</p>');
     return;
   }
-  const s = addStatus('Analizando qué corregir…'); showTyping();
+  var s = addStatus('Analizando qué corregir…');
+  showTyping();
 
-  const patchSystem = `Eres un editor inteligente del harness.md de un asistente de Premodern MTG.
-El usuario ha detectado algo incorrecto o quiere que aprendas algo nuevo.
+  var patchPrompt = 'El usuario ha detectado un error o quiere que aprendas algo. Analiza su feedback y devuelve SOLO JSON válido (sin markdown).\n\n' +
+    'Tipos posibles:\n' +
+    '{"type":"learn_card","reason":"max 72 chars","card":"Nombre","problem":"por qué no recomendar","alternative":"alternativa legal o vacío"}\n' +
+    '{"type":"learn_rule","reason":"max 72 chars","rule":"regla de comportamiento"}\n' +
+    '{"type":"replace","reason":"max 72 chars","old_text":"texto LITERAL del harness","new_text":"texto corregido"}\n' +
+    '{"type":"clarify","question":"una pregunta concreta"}\n\n' +
+    'Feedback del usuario: ' + userFeedback + '\n\n' +
+    'HARNESS (primeros 4000 chars):\n' + harness.slice(0, 4000);
 
-Tu tarea es entender QUÉ tipo de corrección se necesita y actuar en consecuencia.
-
-HAY DOS TIPOS DE CORRECCIÓN:
-
-TIPO A — Dato incorrecto en el harness (ej: una carta mal clasificada como baneada, un dato de metagame equivocado):
-→ Localiza el texto exacto en el harness y propón reemplazarlo.
-
-TIPO B — Comportamiento a corregir (ej: "no me recomiendes X carta", "siempre que hable de Y considera Z"):
-→ Añade una entrada en la sección "CORRECCIONES Y APRENDIZAJES" del harness.
-→ Si la sección no existe, créala al final.
-→ NO toques el resto del harness.
-
-Si NO tienes claro qué cambiar, devuelve type "clarify" y haz UNA pregunta concreta al usuario.
-
-Responde SOLO con JSON válido (sin markdown, sin backticks):
-
-Para tipo A:
-{"type":"replace","reason":"descripción max 72 chars","old_text":"texto LITERAL y EXACTO del harness a reemplazar","new_text":"texto corregido"}
-
-Para tipo B — carta ilegal a evitar:
-{"type":"learn_card","reason":"descripción max 72 chars","card":"Nombre de Carta","problem":"por qué no es legal o por qué no recomendar","alternative":"alternativa legal si la hay, o vacío"}
-
-Para tipo B — regla de comportamiento:
-{"type":"learn_rule","reason":"descripción max 72 chars","rule":"regla de comportamiento a añadir en una línea"}
-
-Si no tienes claro:
-{"type":"clarify","question":"pregunta concreta de una sola línea"}
-
-HARNESS ACTUAL (primeros 6000 chars):
-${harness.slice(0,6000)}`;
-
-  let reply;
+  var reply;
   try {
-    reply = await callGroq(
-      [...conversationHistory, {role:'user', content:'Analiza y genera el parche para esta corrección: ' + userFeedback}],
-      patchSystem
-    );
+    reply = await callGroq(conversationHistory.concat([{ role: 'user', content: patchPrompt }]), '');
     removeTyping(); s.remove();
   } catch(e) { removeTyping(); s.remove(); throw e; }
 
-  let patch;
-  try { patch = JSON.parse(reply.replace(/```json|```/g,'').trim()); }
-  catch(e) {
-    appendBubble('ai','<p>No pude interpretar la corrección. ¿Puedes describir exactamente qué está mal?</p>');
-    return;
-  }
+  var patch;
+  try { patch = JSON.parse(reply.replace(/```json|```/g, '').trim()); }
+  catch(e) { appendBubble('ai', '<p>No pude interpretar la corrección. ¿Puedes describir exactamente qué está mal?</p>'); return; }
 
-  // CLARIFY — AI needs more info
   if (patch.type === 'clarify') {
-    appendBubble('ai','<p>' + patch.question + '</p>');
+    appendBubble('ai', '<p>' + patch.question + '</p>');
     return;
   }
 
-  // LEARN CARD — add to "cartas a evitar" table
   if (patch.type === 'learn_card') {
-    const newRow = '| ' + patch.card + ' | ' + patch.problem + ' | ' + (patch.alternative||'—') + ' |';
-    const marker = '### Cartas que la IA tiende a sugerir incorrectamente en Premodern';
-    let newHarness;
-    if (harness.includes(marker)) {
-      // Find the table and append a row
-      const tableEnd = harness.indexOf('
-### ', harness.indexOf(marker) + marker.length);
-      const insertAt = tableEnd > -1 ? tableEnd : harness.indexOf('
-
-', harness.indexOf(marker));
-      newHarness = harness.slice(0, insertAt) + '
-' + newRow + harness.slice(insertAt);
+    var newRow = '| ' + patch.card + ' | ' + patch.problem + ' | ' + (patch.alternative || '—') + ' |';
+    var marker = '### Cartas que la IA tiende a sugerir incorrectamente en Premodern';
+    var newHarness;
+    if (harness.indexOf(marker) !== -1) {
+      var afterTable = harness.indexOf('\n### ', harness.indexOf(marker) + marker.length);
+      var insertAt = afterTable > -1 ? afterTable : harness.indexOf('\n\n', harness.indexOf(marker) + marker.length);
+      if (insertAt === -1) insertAt = harness.length;
+      newHarness = harness.slice(0, insertAt) + '\n' + newRow + harness.slice(insertAt);
     } else {
-      // Create the section
-      newHarness = harness + '
-
-## CORRECCIONES Y APRENDIZAJES
-
-### Cartas que la IA tiende a sugerir incorrectamente en Premodern
-
-| Carta | Problema | Alternativa legal |
-|-------|----------|-------------------|
-' + newRow + '
-';
+      newHarness = harness + '\n\n## CORRECCIONES Y APRENDIZAJES\n\n### Cartas que la IA tiende a sugerir incorrectamente en Premodern\n\n| Carta | Problema | Alternativa legal |\n|-------|----------|-------------------|\n' + newRow + '\n';
     }
-    pendingPatch = { old_text: harness, new_text: newHarness, reason: patch.reason, display: newRow };
+    pendingPatch = { newHarness: newHarness, reason: patch.reason };
     document.getElementById('patchBtn').style.display = 'inline-block';
     appendBubble('ai',
-      '<p>Entendido. Voy a añadir esto al harness para no volver a cometer este error:</p>' +
-      '<div style="background:#0e0e14;border-radius:7px;padding:10px 12px;font-size:13px;margin-top:8px;border-left:3px solid var(--legal)">' +
-      '<strong>' + patch.card + '</strong> → ' + patch.problem +
+      '<p>Entendido, añado esto al harness para no repetir el error:</p>' +
+      '<div class="patch-preview" style="border-left:3px solid var(--legal)">' +
+      '<strong>' + patch.card + '</strong> — ' + patch.problem +
       (patch.alternative ? '<br><span style="color:var(--muted)">Alternativa: ' + patch.alternative + '</span>' : '') +
       '</div>' +
-      '<p style="margin-top:8px;font-size:12px;color:var(--muted)">Pulsa <strong>✏️ Parchear</strong> para guardar en GitHub.</p>'
+      '<p style="font-size:12px;color:var(--muted);margin-top:8px">Pulsa <strong>✎ Guardar</strong> para guardarlo en GitHub.</p>'
     );
     return;
   }
 
-  // LEARN RULE — add to behaviour rules
   if (patch.type === 'learn_rule') {
-    const ruleMarker = '### Reglas de comportamiento aprendidas';
-    let newHarness;
-    if (harness.includes(ruleMarker)) {
-      const afterMarker = harness.indexOf('
-', harness.indexOf(ruleMarker)) + 1;
-      newHarness = harness.slice(0, afterMarker) + '- ' + patch.rule + '
-' + harness.slice(afterMarker);
+    var ruleMarker = '### Reglas de comportamiento aprendidas';
+    var newHarnessR;
+    if (harness.indexOf(ruleMarker) !== -1) {
+      var afterMarker = harness.indexOf('\n', harness.indexOf(ruleMarker)) + 1;
+      newHarnessR = harness.slice(0, afterMarker) + '- ' + patch.rule + '\n' + harness.slice(afterMarker);
     } else {
-      newHarness = harness + '
-
-### Reglas de comportamiento aprendidas
-- ' + patch.rule + '
-';
+      newHarnessR = harness + '\n\n### Reglas de comportamiento aprendidas\n- ' + patch.rule + '\n';
     }
-    pendingPatch = { old_text: harness, new_text: newHarness, reason: patch.reason, display: patch.rule };
+    pendingPatch = { newHarness: newHarnessR, reason: patch.reason };
     document.getElementById('patchBtn').style.display = 'inline-block';
     appendBubble('ai',
-      '<p>De acuerdo, añado esta regla al harness:</p>' +
-      '<div style="background:#0e0e14;border-radius:7px;padding:10px 12px;font-size:13px;margin-top:8px;border-left:3px solid var(--legal)">' +
-      patch.rule + '</div>' +
-      '<p style="margin-top:8px;font-size:12px;color:var(--muted)">Pulsa <strong>✏️ Parchear</strong> para guardar en GitHub.</p>'
+      '<p>De acuerdo, añado esta regla:</p>' +
+      '<div class="patch-preview" style="border-left:3px solid var(--legal)">' + patch.rule + '</div>' +
+      '<p style="font-size:12px;color:var(--muted);margin-top:8px">Pulsa <strong>✎ Guardar</strong> para guardarlo en GitHub.</p>'
     );
     return;
   }
 
-  // REPLACE — fix literal text in harness
   if (patch.type === 'replace') {
-    if (!patch.old_text || !harness.includes(patch.old_text)) {
-      appendBubble('ai',
-        '<p>No encuentro ese fragmento exacto en el harness. ¿Puedes ser más específico sobre qué está mal?</p>'
-      );
+    if (!patch.old_text || harness.indexOf(patch.old_text) === -1) {
+      appendBubble('ai', '<p>No encontré ese fragmento exacto en el harness. ¿Puedes ser más específico?</p>');
       return;
     }
-    pendingPatch = { old_text: patch.old_text, new_text: patch.new_text, reason: patch.reason, isReplace: true };
+    var newHarnessP = harness.replace(patch.old_text, patch.new_text);
+    pendingPatch = { newHarness: newHarnessP, reason: patch.reason };
     document.getElementById('patchBtn').style.display = 'inline-block';
     appendBubble('ai',
-      '<p>He localizado el error en el harness. Corrección propuesta:</p>' +
-      '<div style="background:#0e0e14;border-radius:7px;padding:10px;font-size:12px;margin-top:8px;border-left:3px solid var(--warning)">' +
-      '<div style="color:#e88;margin-bottom:4px">❌ Quitar:</div>' +
-      '<code style="word-break:break-all">' + patch.old_text.slice(0,200).replace(/</g,'&lt;') + (patch.old_text.length>200?'…':'') + '</code>' +
-      '<div style="color:var(--legal);margin:8px 0 4px">✅ Poner:</div>' +
-      '<code style="word-break:break-all">' + patch.new_text.slice(0,200).replace(/</g,'&lt;') + (patch.new_text.length>200?'…':'') + '</code>' +
+      '<p>Corrección localizada:</p>' +
+      '<div class="patch-preview" style="border-left:3px solid var(--warning)">' +
+      '<div style="color:#e88;margin-bottom:4px">❌ ' + patch.old_text.slice(0, 150).replace(/</g, '&lt;') + '</div>' +
+      '<div style="color:var(--legal)">✅ ' + patch.new_text.slice(0, 150).replace(/</g, '&lt;') + '</div>' +
       '</div>' +
-      '<p style="margin-top:8px;font-size:12px;color:var(--muted)">Pulsa <strong>✏️ Parchear</strong> para guardar en GitHub.</p>'
+      '<p style="font-size:12px;color:var(--muted);margin-top:8px">Pulsa <strong>✎ Guardar</strong> para guardarlo en GitHub.</p>'
     );
   }
 }
+
 async function triggerHarnessPatch() {
   if (!pendingPatch) return;
-  const btn = document.getElementById('patchBtn');
+  var btn = document.getElementById('patchBtn');
   btn.textContent = '⏳'; btn.disabled = true;
   try {
-    // For learn types, new_text is already the full new harness
-    // For replace type, we need to do the replacement
-    const newHarness = pendingPatch.isReplace
-      ? harness.replace(pendingPatch.old_text, pendingPatch.new_text)
-      : pendingPatch.new_text;
-    await commitHarnessPatch(newHarness, pendingPatch.reason);
-    harness = newHarness;
+    await commitHarnessPatch(pendingPatch.newHarness, pendingPatch.reason);
+    harness = pendingPatch.newHarness;
     pendingPatch = null;
-    btn.style.display = 'none'; btn.textContent = '✏️ Parchear'; btn.disabled = false;
+    btn.style.display = 'none'; btn.textContent = '✎ Guardar'; btn.disabled = false;
     document.getElementById('harnessDot').className = 'harness-dot loaded';
-    appendBubble('ai','<p>✅ Aprendizaje guardado en GitHub. Lo tendré en cuenta a partir de ahora.</p>');
+    appendBubble('ai', '<p>✅ Aprendizaje guardado en GitHub. Lo tendré en cuenta a partir de ahora.</p>');
   } catch(e) {
-    btn.textContent = '✏️ Parchear'; btn.disabled = false;
-    appendBubble('ai','<p style="color:var(--illegal)">Error al guardar en GitHub: '+e.message+'<br>Comprueba que el PAT tiene permisos <strong>repo</strong>.</p>');
+    btn.textContent = '✎ Guardar'; btn.disabled = false;
+    appendBubble('ai', '<p style="color:var(--illegal)">Error al guardar: ' + e.message + '<br>Comprueba que el PAT tiene permisos <strong>repo</strong>.</p>');
   }
 }
+
 function isPatchRequest(text) {
-  return /harness|arnés|arnes|corrígelo|corrigelo|está mal en el|esta mal en el|actualiza el harness|guardalo en el harness|guárdalo en el harness|incorrecto en el harness/i.test(text);
+  return /harness|arnés|arnes|corrígelo|corrigelo|está mal en el|esta mal en el|actualiza el harness|guardalo en el harness|incorrecto en el harness/i.test(text);
 }
 
-// ── Decklist render ───────────────────────────────────────────────────────────
+// ── Decklist ──────────────────────────────────────────────────────────────────
 function responseHasDecklist(text) { return countCards(parseDecklist(text)) >= 50; }
 
 async function renderValidatedDecklist(rawText) {
-  const listMatch = rawText.match(/LISTA FINAL:?\n([\s\S]+?)(?:SIDEBOARD|$)/i);
-  const sbMatch   = rawText.match(/SIDEBOARD:?\n([\s\S]+?)$/i);
-  const cards   = listMatch ? parseDecklist(listMatch[1]) : parseDecklist(rawText);
-  const sbCards = sbMatch   ? parseDecklist(sbMatch[1])   : [];
-  if (cards.length === 0) { appendBubble('ai','<p>No pude extraer la lista. Dime <em>"dame la lista"</em>.</p>'); return; }
+  var listMatch = rawText.match(/LISTA FINAL:?\n([\s\S]+?)(?:SIDEBOARD|$)/i);
+  var sbMatch   = rawText.match(/SIDEBOARD:?\n([\s\S]+?)$/i);
+  var cards   = listMatch ? parseDecklist(listMatch[1]) : parseDecklist(rawText);
+  var sbCards = sbMatch   ? parseDecklist(sbMatch[1])   : [];
+  if (cards.length === 0) { appendBubble('ai', '<p>No pude extraer la lista. Dime <em>"dame la lista"</em>.</p>'); return; }
 
-  const s = addStatus('Verificando '+cards.length+' cartas en Scryfall…');
-  let validated = await Promise.all(cards.map(async c => ({...c,...(await scryfallCheck(c.name))})));
+  var s = addStatus('Verificando ' + cards.length + ' cartas en Scryfall…');
+  var validated = await Promise.all(cards.map(async function(c) { return Object.assign({}, c, await scryfallCheck(c.name)); }));
   s.remove();
-  const illegal = validated.filter(c=>!c.ok);
-  let finalCards = validated.filter(c=>c.ok);
+
+  var illegal = validated.filter(function(c) { return !c.ok; });
+  var finalCards = validated.filter(function(c) { return c.ok; });
 
   if (illegal.length > 0) {
-    const names = illegal.map(c=>c.name).join(', ');
-    const sr = addStatus('Reemplazando '+illegal.length+' carta(s) ilegal(es)…','warn');
+    var names = illegal.map(function(c) { return c.name; }).join(', ');
+    var sr = addStatus('Reemplazando ' + illegal.length + ' carta(s) ilegal(es)…', 'warn');
     showTyping();
     try {
-      const fixed = await callGroq([...conversationHistory,{role:'user',content:'Corrige ilegales: '+names}],
-        `Devuelve SOLO lista corregida "4 Nombre" una por línea, 60 cartas. Ilegales a sustituir: ${names}. Legales ya confirmadas:\n${finalCards.map(c=>c.qty+' '+c.name).join('\n')}`);
+      var legalList = finalCards.map(function(c) { return c.qty + ' ' + c.name; }).join('\n');
+      var fixed = await callGroq(
+        conversationHistory.concat([{ role: 'user', content: 'Corrige ilegales: ' + names }]),
+        'Devuelve SOLO lista "4 Nombre" una por línea, 60 cartas. Ilegales a sustituir: ' + names + '. Legales confirmadas:\n' + legalList
+      );
       removeTyping(); sr.remove();
-      const v2 = await Promise.all(parseDecklist(fixed).map(async c=>({...c,...(await scryfallCheck(c.name))})));
-      finalCards = v2.filter(c=>c.ok);
+      var v2 = await Promise.all(parseDecklist(fixed).map(async function(c) { return Object.assign({}, c, await scryfallCheck(c.name)); }));
+      finalCards = v2.filter(function(c) { return c.ok; });
     } catch(e) { removeTyping(); sr.remove(); }
   }
   clearStatuses();
 
-  finalCards.forEach(c=>{ c._isLand=isLand(c.name); });
-  const spells = finalCards.filter(c=>!c._isLand);
-  const lands  = finalCards.filter(c=>c._isLand);
+  finalCards.forEach(function(c) { c._isLand = isLand(c.name); });
+  var spells = finalCards.filter(function(c) { return !c._isLand; });
+  var lands  = finalCards.filter(function(c) { return c._isLand; });
 
-  const chat = document.getElementById('chat');
-  const wrap = document.createElement('div'); wrap.className='msg ai';
-  const av = document.createElement('div'); av.className='avatar'; av.textContent='🤖';
-  const bu = document.createElement('div'); bu.className='bubble';
-  bu.innerHTML='<p>Mazo <strong>Premodern</strong> — verificado en Scryfall:</p>';
-  const dl = document.createElement('div'); dl.className='decklist';
+  var chat = document.getElementById('chat');
+  var wrap = document.createElement('div'); wrap.className = 'msg ai';
+  var av = document.createElement('div'); av.className = 'avatar'; av.textContent = '🤖';
+  var bu = document.createElement('div'); bu.className = 'bubble';
+  bu.innerHTML = '<p>Mazo <strong>Premodern</strong> — verificado en Scryfall:</p>';
+  var dl = document.createElement('div'); dl.className = 'decklist';
 
   function addSec(title, list) {
     if (!list.length) return;
-    const t = document.createElement('div'); t.className='deck-section-title';
-    t.textContent=title+' ('+countCards(list)+')'; dl.appendChild(t);
-    list.forEach(c => {
-      const row = document.createElement('div'); row.className='card-row';
-      row.innerHTML='<span class="card-qty">'+c.qty+'x</span><span class="card-name">'+c.name+'</span>';
+    var t = document.createElement('div'); t.className = 'deck-section-title';
+    t.textContent = title + ' (' + countCards(list) + ')'; dl.appendChild(t);
+    list.forEach(function(c) {
+      var row = document.createElement('div'); row.className = 'card-row';
+      row.innerHTML = '<span class="card-qty">' + c.qty + 'x</span><span class="card-name">' + c.name + '</span>';
       dl.appendChild(row);
     });
   }
   addSec('Hechizos', spells); addSec('Tierras', lands);
-  const footer = document.createElement('div');
-  footer.style.cssText='font-size:11px;color:var(--muted);margin-top:8px;text-align:right';
-  footer.textContent=countCards(finalCards)+' cartas · Scryfall ✓'; dl.appendChild(footer);
+
+  var footer = document.createElement('div');
+  footer.style.cssText = 'font-size:11px;color:var(--muted);margin-top:8px;text-align:right';
+  footer.textContent = countCards(finalCards) + ' cartas · Scryfall ✓'; dl.appendChild(footer);
 
   if (sbCards.length > 0) {
-    const sbt = document.createElement('div'); sbt.className='deck-section-title';
-    sbt.style.marginTop='12px'; sbt.textContent='Sideboard ('+countCards(sbCards)+')'; dl.appendChild(sbt);
-    sbCards.forEach(c => {
-      const row = document.createElement('div'); row.className='card-row';
-      row.style.borderLeftColor='var(--muted)';
-      row.innerHTML='<span class="card-qty">'+c.qty+'x</span><span class="card-name">'+c.name+'</span>';
+    var sbt = document.createElement('div'); sbt.className = 'deck-section-title';
+    sbt.style.marginTop = '12px'; sbt.textContent = 'Sideboard (' + countCards(sbCards) + ')'; dl.appendChild(sbt);
+    sbCards.forEach(function(c) {
+      var row = document.createElement('div'); row.className = 'card-row'; row.style.borderLeftColor = 'var(--muted)';
+      row.innerHTML = '<span class="card-qty">' + c.qty + 'x</span><span class="card-name">' + c.name + '</span>';
       dl.appendChild(row);
     });
   }
   bu.appendChild(dl); wrap.appendChild(av); wrap.appendChild(bu);
-  chat.appendChild(wrap); chat.scrollTop=9999;
+  chat.appendChild(wrap); chat.scrollTop = 9999;
 }
 
 // ── Send ──────────────────────────────────────────────────────────────────────
 async function sendMessage() {
-  const input = document.getElementById('userInput');
-  const text = input.value.trim();
+  var input = document.getElementById('userInput');
+  var text = input.value.trim();
   if (!text || isLoading) return;
   isLoading = true;
   input.value = ''; input.style.height = 'auto';
   document.getElementById('sendBtn').disabled = true;
-  appendBubble('user','<p>'+text+'</p>');
+  appendBubble('user', '<p>' + text + '</p>');
 
-  // Harness patch request
   if (isPatchRequest(text)) {
     try { await requestHarnessPatch(text); }
-    catch(e) { appendBubble('ai','<p style="color:var(--illegal)">Error: '+e.message+'</p>'); }
+    catch(e) { appendBubble('ai', '<p style="color:var(--illegal)">Error: ' + e.message + '</p>'); }
     isLoading = false; document.getElementById('sendBtn').disabled = false; input.focus();
     return;
   }
 
-  conversationHistory.push({role:'user',content:text});
+  conversationHistory.push({ role: 'user', content: text });
   showTyping();
-  const s = addStatus('Pensando…');
+  var s = addStatus('Pensando…');
 
-  const isFirst = conversationHistory.filter(m=>m.role==='user').length === 1;
-  const wantsList = /^(dame|construye|hazme|lista|genera|ya está|adelante|perfecto|venga|ok,?\s*construye|listo)/i.test(text.trim());
+  var isFirst = conversationHistory.filter(function(m) { return m.role === 'user'; }).length === 1;
+  var wantsList = /^(dame|construye|hazme|lista|genera|adelante|perfecto|venga|listo|ok construye)/i.test(text.trim());
 
-  const extra = wantsList
-    ? `El usuario quiere la lista final. Construye por bloques (Motor, Soporte, Interacción, Wincon, Tierras) explicando brevemente cada uno. Al final incluye:\n\nLISTA FINAL:\n4 Nombre\n... (EXACTAMENTE 60 cartas)\n\nSIDEBOARD:\n2 Carta\n... (exactamente 15 cartas)`
+  var extra = wantsList
+    ? 'El usuario quiere la lista final. Construye por bloques (Motor, Soporte, Interacción, Wincon, Tierras) con breve explicación de cada uno. Al final:\n\nLISTA FINAL:\n4 Nombre\n...(EXACTAMENTE 60 cartas)\n\nSIDEBOARD:\n2 Carta\n...(exactamente 15 cartas)'
     : isFirst
-    ? `Primera interacción. Sigue el PRINCIPIO FUNDAMENTAL del harness: reacciona a su idea, explora qué existe en el formato, presenta opciones concretas con implicaciones, detecta huecos. NO hagas un cuestionario. Piensa en voz alta con él.`
-    : `Continúa la conversación reactiva. Si hay huecos sin resolver, señálalos. Si el usuario menciona cartas ilegales, corrígelas al momento. Si el esquema está suficientemente definido, propón pasar a construir.`;
+    ? 'Primera interacción. Sigue el PRINCIPIO FUNDAMENTAL: reacciona a su idea, explora qué existe en el formato, presenta opciones concretas, detecta huecos. NO hagas un cuestionario. Piensa en voz alta con él.'
+    : 'Continúa la conversación reactiva. Señala huecos si los hay. Si el usuario menciona cartas ilegales, corrígelas al momento. Si el esquema está definido, propón construir.';
 
-  let reply;
+  var reply;
   try {
     reply = await callGroq(conversationHistory, extra);
   } catch(e) {
     removeTyping(); s.remove(); clearStatuses();
-    appendBubble('ai','<p style="color:var(--illegal)">Error: '+e.message+'</p>');
+    appendBubble('ai', '<p style="color:var(--illegal)">Error: ' + e.message + '</p>');
     conversationHistory.pop();
     isLoading = false; document.getElementById('sendBtn').disabled = false; input.focus();
     return;
   }
 
   removeTyping(); s.remove();
-  conversationHistory.push({role:'assistant',content:reply});
+  conversationHistory.push({ role: 'assistant', content: reply });
 
   if (responseHasDecklist(reply)) {
-    const reasoning = reply.replace(/LISTA FINAL[\s\S]*/i,'').trim();
-    if (reasoning.length > 80) appendBubble('ai','<p>'+md(reasoning)+'</p>');
+    var reasoning = reply.replace(/LISTA FINAL[\s\S]*/i, '').trim();
+    if (reasoning.length > 80) appendBubble('ai', '<p>' + md(reasoning) + '</p>');
     await renderValidatedDecklist(reply);
   } else {
-    appendBubble('ai','<p>'+md(reply)+'</p>');
+    appendBubble('ai', '<p>' + md(reply) + '</p>');
   }
 
   clearStatuses();
   isLoading = false; document.getElementById('sendBtn').disabled = false; input.focus();
 }
 
-document.getElementById('sendBtn').addEventListener('click', sendMessage);
-document.getElementById('userInput').addEventListener('keydown', e=>{
-  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}
+document.getElementById('userInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 });
-document.getElementById('userInput').addEventListener('input', function(){
-  this.style.height='auto';
-  this.style.height=Math.min(this.scrollHeight,120)+'px';
-});
-document.querySelectorAll('.format-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.format-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    conversationHistory=[]; pendingPatch=null;
-    document.getElementById('chat').innerHTML='';
-    appendBubble('ai','<p>Historial reiniciado. ¿Qué quieres construir?</p>');
-  });
+document.getElementById('userInput').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
 });
 </script>
 </body>
