@@ -416,3 +416,28 @@ El ban de Parallax Tide ha reconfigurado el metagame:
 - data.duresscrew.com — win rates MTGO (33.371 partidas)
 - mtgtop8.com/format?f=PREM — torneos en tiempo real
 
+---
+
+## CORRECCIONES Y APRENDIZAJES
+*Esta sección se actualiza automáticamente cuando el usuario detecta errores.*
+
+### Cartas que la IA tiende a sugerir incorrectamente en Premodern
+
+| Carta | Problema | Alternativa legal |
+|-------|----------|-------------------|
+| Life from the Loam | No es legal — es de Ravnica (2005), posterior a Scourge | Crucible of Worlds (Mirrodin, legal), Gaea's Blessing para reciclar |
+| Dark Confidant | No es legal — es de Ravnica (2005) | Phyrexian Arena (Apocalypse, legal) |
+| Sensei's Divining Top | No es legal — es de Champions of Kamigawa (2004) | Sylvan Library, Mirri's Guile, Scroll Rack |
+| Ponder | No es legal — es de Lorwyn (2007) | Portent, Impulse, Opt |
+| Preordain | No es legal — es de Magic 2011 | Portent, Opt |
+| Thoughtseize | No es legal — es de Lorwyn (2007) | Duress, Cabal Therapy, Unmask |
+| Snapcaster Mage | No es legal — es de Innistrad (2011) | Cunning Wish para recuperar instantáneos |
+| Chrome Mox | No es legal — es de Mirrodin (2003, posterior a Scourge) | Lotus Petal, Mox Diamond |
+| Tarmogoyf | No es legal — es de Future Sight (2007) | Nimble Mongoose, Werebear, Quirion Dryad |
+| Cabal Coffers | No es legal — es de Torment (2002)... ESPERA, Torment SÍ es legal | Cabal Coffers ES legal |
+
+### Reglas de comportamiento aprendidas
+- No sugerir Life from the Loam en ningún contexto de Premodern
+- Verificar siempre el set de una carta antes de recomendarla si hay dudas
+- Si el usuario corrige una carta ilegal, no sustituirla por otra carta aleatoria — preguntar qué función cubría
+

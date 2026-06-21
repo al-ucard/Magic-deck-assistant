@@ -342,60 +342,169 @@ async function requestHarnessPatch(userFeedback) {
     appendBubble('ai','<p>Para editar el harness necesito un GitHub PAT. Añádelo en 🔑 Keys.</p>');
     return;
   }
-  const s = addStatus('Generando corrección para el harness…'); showTyping();
-  const patchSystem = `Eres un editor del harness.md. El usuario ha detectado un error.
-Responde SOLO con JSON (sin markdown):
-{"found":true,"reason":"descripción max 72 chars","old_text":"texto literal exacto del harness a reemplazar","new_text":"texto corregido"}
-o si no puedes identificarlo:
-{"found":false,"reason":"explicación"}
+  const s = addStatus('Analizando qué corregir…'); showTyping();
 
-HARNESS ACTUAL:\n${harness.slice(0,8000)}`;
+  const patchSystem = `Eres un editor inteligente del harness.md de un asistente de Premodern MTG.
+El usuario ha detectado algo incorrecto o quiere que aprendas algo nuevo.
+
+Tu tarea es entender QUÉ tipo de corrección se necesita y actuar en consecuencia.
+
+HAY DOS TIPOS DE CORRECCIÓN:
+
+TIPO A — Dato incorrecto en el harness (ej: una carta mal clasificada como baneada, un dato de metagame equivocado):
+→ Localiza el texto exacto en el harness y propón reemplazarlo.
+
+TIPO B — Comportamiento a corregir (ej: "no me recomiendes X carta", "siempre que hable de Y considera Z"):
+→ Añade una entrada en la sección "CORRECCIONES Y APRENDIZAJES" del harness.
+→ Si la sección no existe, créala al final.
+→ NO toques el resto del harness.
+
+Si NO tienes claro qué cambiar, devuelve type "clarify" y haz UNA pregunta concreta al usuario.
+
+Responde SOLO con JSON válido (sin markdown, sin backticks):
+
+Para tipo A:
+{"type":"replace","reason":"descripción max 72 chars","old_text":"texto LITERAL y EXACTO del harness a reemplazar","new_text":"texto corregido"}
+
+Para tipo B — carta ilegal a evitar:
+{"type":"learn_card","reason":"descripción max 72 chars","card":"Nombre de Carta","problem":"por qué no es legal o por qué no recomendar","alternative":"alternativa legal si la hay, o vacío"}
+
+Para tipo B — regla de comportamiento:
+{"type":"learn_rule","reason":"descripción max 72 chars","rule":"regla de comportamiento a añadir en una línea"}
+
+Si no tienes claro:
+{"type":"clarify","question":"pregunta concreta de una sola línea"}
+
+HARNESS ACTUAL (primeros 6000 chars):
+${harness.slice(0,6000)}`;
+
   let reply;
   try {
-    reply = await callGroq([...conversationHistory,{role:'user',content:'Detecta y genera el parche para: '+userFeedback}], patchSystem);
+    reply = await callGroq(
+      [...conversationHistory, {role:'user', content:'Analiza y genera el parche para esta corrección: ' + userFeedback}],
+      patchSystem
+    );
     removeTyping(); s.remove();
   } catch(e) { removeTyping(); s.remove(); throw e; }
 
   let patch;
   try { patch = JSON.parse(reply.replace(/```json|```/g,'').trim()); }
-  catch(e) { appendBubble('ai','<p>No pude generar el parche automáticamente. Edita el harness.md en GitHub directamente.</p>'); return; }
-
-  if (!patch.found) {
-    appendBubble('ai','<p>No identifiqué exactamente qué corregir: <em>'+patch.reason+'</em>. Edítalo manualmente en GitHub.</p>');
+  catch(e) {
+    appendBubble('ai','<p>No pude interpretar la corrección. ¿Puedes describir exactamente qué está mal?</p>');
     return;
   }
-  if (!harness.includes(patch.old_text)) {
+
+  // CLARIFY — AI needs more info
+  if (patch.type === 'clarify') {
+    appendBubble('ai','<p>' + patch.question + '</p>');
+    return;
+  }
+
+  // LEARN CARD — add to "cartas a evitar" table
+  if (patch.type === 'learn_card') {
+    const newRow = '| ' + patch.card + ' | ' + patch.problem + ' | ' + (patch.alternative||'—') + ' |';
+    const marker = '### Cartas que la IA tiende a sugerir incorrectamente en Premodern';
+    let newHarness;
+    if (harness.includes(marker)) {
+      // Find the table and append a row
+      const tableEnd = harness.indexOf('
+### ', harness.indexOf(marker) + marker.length);
+      const insertAt = tableEnd > -1 ? tableEnd : harness.indexOf('
+
+', harness.indexOf(marker));
+      newHarness = harness.slice(0, insertAt) + '
+' + newRow + harness.slice(insertAt);
+    } else {
+      // Create the section
+      newHarness = harness + '
+
+## CORRECCIONES Y APRENDIZAJES
+
+### Cartas que la IA tiende a sugerir incorrectamente en Premodern
+
+| Carta | Problema | Alternativa legal |
+|-------|----------|-------------------|
+' + newRow + '
+';
+    }
+    pendingPatch = { old_text: harness, new_text: newHarness, reason: patch.reason, display: newRow };
+    document.getElementById('patchBtn').style.display = 'inline-block';
     appendBubble('ai',
-      '<p>El fragmento no coincide exactamente con el harness. Corrección propuesta para aplicar manualmente:</p>'+
-      '<div style="background:#0e0e14;border-radius:7px;padding:10px;font-size:12px;margin-top:8px">'+
-      '<div style="color:#e88;margin-bottom:4px">❌ Reemplazar:</div><code>'+patch.old_text.slice(0,300).replace(/</g,'&lt;')+'</code>'+
-      '<div style="color:var(--legal);margin:8px 0 4px">✅ Por:</div><code>'+patch.new_text.slice(0,300).replace(/</g,'&lt;')+'</code></div>');
+      '<p>Entendido. Voy a añadir esto al harness para no volver a cometer este error:</p>' +
+      '<div style="background:#0e0e14;border-radius:7px;padding:10px 12px;font-size:13px;margin-top:8px;border-left:3px solid var(--legal)">' +
+      '<strong>' + patch.card + '</strong> → ' + patch.problem +
+      (patch.alternative ? '<br><span style="color:var(--muted)">Alternativa: ' + patch.alternative + '</span>' : '') +
+      '</div>' +
+      '<p style="margin-top:8px;font-size:12px;color:var(--muted)">Pulsa <strong>✏️ Parchear</strong> para guardar en GitHub.</p>'
+    );
     return;
   }
 
-  pendingPatch = patch;
-  document.getElementById('patchBtn').style.display = 'inline-block';
-  appendBubble('ai',
-    '<p>Corrección preparada:</p>'+
-    '<div style="background:#0e0e14;border-radius:7px;padding:10px;font-size:12px;margin-top:8px;border-left:3px solid var(--warning)">'+
-    '<div style="color:#e88;margin-bottom:4px">❌ Eliminar:</div><code style="word-break:break-all">'+patch.old_text.slice(0,250).replace(/</g,'&lt;')+(patch.old_text.length>250?'…':'')+'</code>'+
-    '<div style="color:var(--legal);margin:8px 0 4px">✅ Sustituir por:</div><code style="word-break:break-all">'+patch.new_text.slice(0,250).replace(/</g,'&lt;')+(patch.new_text.length>250?'…':'')+'</code>'+
-    '</div>'+
-    '<p style="margin-top:8px;font-size:12px;color:var(--muted)">Pulsa <strong>✏️ Parchear</strong> para guardar en GitHub.</p>'
-  );
+  // LEARN RULE — add to behaviour rules
+  if (patch.type === 'learn_rule') {
+    const ruleMarker = '### Reglas de comportamiento aprendidas';
+    let newHarness;
+    if (harness.includes(ruleMarker)) {
+      const afterMarker = harness.indexOf('
+', harness.indexOf(ruleMarker)) + 1;
+      newHarness = harness.slice(0, afterMarker) + '- ' + patch.rule + '
+' + harness.slice(afterMarker);
+    } else {
+      newHarness = harness + '
+
+### Reglas de comportamiento aprendidas
+- ' + patch.rule + '
+';
+    }
+    pendingPatch = { old_text: harness, new_text: newHarness, reason: patch.reason, display: patch.rule };
+    document.getElementById('patchBtn').style.display = 'inline-block';
+    appendBubble('ai',
+      '<p>De acuerdo, añado esta regla al harness:</p>' +
+      '<div style="background:#0e0e14;border-radius:7px;padding:10px 12px;font-size:13px;margin-top:8px;border-left:3px solid var(--legal)">' +
+      patch.rule + '</div>' +
+      '<p style="margin-top:8px;font-size:12px;color:var(--muted)">Pulsa <strong>✏️ Parchear</strong> para guardar en GitHub.</p>'
+    );
+    return;
+  }
+
+  // REPLACE — fix literal text in harness
+  if (patch.type === 'replace') {
+    if (!patch.old_text || !harness.includes(patch.old_text)) {
+      appendBubble('ai',
+        '<p>No encuentro ese fragmento exacto en el harness. ¿Puedes ser más específico sobre qué está mal?</p>'
+      );
+      return;
+    }
+    pendingPatch = { old_text: patch.old_text, new_text: patch.new_text, reason: patch.reason, isReplace: true };
+    document.getElementById('patchBtn').style.display = 'inline-block';
+    appendBubble('ai',
+      '<p>He localizado el error en el harness. Corrección propuesta:</p>' +
+      '<div style="background:#0e0e14;border-radius:7px;padding:10px;font-size:12px;margin-top:8px;border-left:3px solid var(--warning)">' +
+      '<div style="color:#e88;margin-bottom:4px">❌ Quitar:</div>' +
+      '<code style="word-break:break-all">' + patch.old_text.slice(0,200).replace(/</g,'&lt;') + (patch.old_text.length>200?'…':'') + '</code>' +
+      '<div style="color:var(--legal);margin:8px 0 4px">✅ Poner:</div>' +
+      '<code style="word-break:break-all">' + patch.new_text.slice(0,200).replace(/</g,'&lt;') + (patch.new_text.length>200?'…':'') + '</code>' +
+      '</div>' +
+      '<p style="margin-top:8px;font-size:12px;color:var(--muted)">Pulsa <strong>✏️ Parchear</strong> para guardar en GitHub.</p>'
+    );
+  }
 }
 async function triggerHarnessPatch() {
   if (!pendingPatch) return;
   const btn = document.getElementById('patchBtn');
   btn.textContent = '⏳'; btn.disabled = true;
   try {
-    const newHarness = harness.replace(pendingPatch.old_text, pendingPatch.new_text);
+    // For learn types, new_text is already the full new harness
+    // For replace type, we need to do the replacement
+    const newHarness = pendingPatch.isReplace
+      ? harness.replace(pendingPatch.old_text, pendingPatch.new_text)
+      : pendingPatch.new_text;
     await commitHarnessPatch(newHarness, pendingPatch.reason);
     harness = newHarness;
     pendingPatch = null;
     btn.style.display = 'none'; btn.textContent = '✏️ Parchear'; btn.disabled = false;
     document.getElementById('harnessDot').className = 'harness-dot loaded';
-    appendBubble('ai','<p>✅ Harness actualizado en GitHub. Activo en esta sesión y en futuras visitas.</p>');
+    appendBubble('ai','<p>✅ Aprendizaje guardado en GitHub. Lo tendré en cuenta a partir de ahora.</p>');
   } catch(e) {
     btn.textContent = '✏️ Parchear'; btn.disabled = false;
     appendBubble('ai','<p style="color:var(--illegal)">Error al guardar en GitHub: '+e.message+'<br>Comprueba que el PAT tiene permisos <strong>repo</strong>.</p>');
