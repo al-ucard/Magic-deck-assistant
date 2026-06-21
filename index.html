@@ -90,21 +90,14 @@
     <div class="key-section">
       <b>API key de Groq (gratis)</b><br>
       1. Ve a <a href="https://console.groq.com" target="_blank">console.groq.com</a><br>
-      2. Regístrate → API Keys → Create key
+      2. Regístrate → API Keys → Create key<br>
+      <a href="https://console.groq.com/docs/quickstart" target="_blank" style="font-size:11px;color:var(--gold)">📖 Guía paso a paso →</a>
     </div>
     <div class="key-input-wrap">
       <label>Groq API Key</label>
       <input class="key-input" id="groqKeyInput" type="password" placeholder="gsk_…" autocomplete="off" />
     </div>
-    <div class="key-section">
-      <b>URL de tu repo GitHub Pages</b><br>
-      Donde tienes subido el <code>harness.md</code><br>
-      Ejemplo: <em>https://tunombre.github.io/magic-deck-assistant</em>
-    </div>
-    <div class="key-input-wrap">
-      <label>URL base de tu GitHub Pages</label>
-      <input class="key-input" id="repoUrlInput" type="text" placeholder="https://tunombre.github.io/magic-deck-assistant" autocomplete="off" />
-    </div>
+
     <div class="key-section">
       <b>GitHub Personal Access Token</b> <span style="color:var(--legal);font-size:11px">(opcional)</span><br>
       Permite que la IA corrija el harness.md directamente.<br>
@@ -142,24 +135,22 @@
 </div>
 
 <script>
-let groqKey = "", repoUrl = "", harness = "", githubPat = "", conversationHistory = [], isLoading = false;
+let groqKey = "", harness = "", githubPat = "", conversationHistory = [], isLoading = false;
 let pendingPatch = null;
 
 // ── Keys ──────────────────────────────────────────────────────────────────────
 function saveKeys() {
   const gk  = document.getElementById('groqKeyInput').value.trim();
-  const ru  = document.getElementById('repoUrlInput').value.trim().replace(/\/$/, '');
   const pat = document.getElementById('githubPatInput').value.trim();
   const err = document.getElementById('keyError');
   if (!gk.startsWith('gsk_') || gk.length < 20) { err.style.display='block'; err.textContent='La key de Groq debe empezar por gsk_'; return; }
-  if (!ru.startsWith('http')) { err.style.display='block'; err.textContent='Introduce la URL de tu GitHub Pages'; return; }
-  groqKey = gk; repoUrl = ru; githubPat = pat;
-  try { localStorage.setItem('groq_key', gk); localStorage.setItem('repo_url', ru); if (pat) localStorage.setItem('github_pat', pat); } catch(e){}
+  groqKey = gk; githubPat = pat;
+  try { localStorage.setItem('groq_key', gk); if (pat) localStorage.setItem('github_pat', pat); } catch(e){}
   showApp();
 }
 function logout() {
-  try { localStorage.removeItem('groq_key'); localStorage.removeItem('repo_url'); localStorage.removeItem('github_pat'); } catch(e){}
-  groqKey = ""; repoUrl = ""; harness = ""; githubPat = "";
+  try { localStorage.removeItem('groq_key'); localStorage.removeItem('github_pat'); } catch(e){}
+  groqKey = ""; harness = ""; githubPat = "";
   document.getElementById('app').style.display = 'none';
   document.getElementById('keyScreen').style.display = 'flex';
   conversationHistory = []; pendingPatch = null;
@@ -168,7 +159,7 @@ async function loadHarness() {
   const dot = document.getElementById('harnessDot');
   dot.className = 'harness-dot';
   try {
-    const r = await fetch(repoUrl + '/harness.md?nocache=' + Date.now());
+    const r = await fetch('./harness.md?nocache=' + Date.now());
     if (!r.ok) throw new Error('HTTP ' + r.status);
     harness = await r.text();
     dot.className = 'harness-dot loaded';
@@ -196,17 +187,16 @@ window.addEventListener('load', () => {
     const gk = localStorage.getItem('groq_key');
     const ru = localStorage.getItem('repo_url');
     const pat = localStorage.getItem('github_pat');
-    if (gk && gk.startsWith('gsk_') && ru) {
-      groqKey = gk; repoUrl = ru; githubPat = pat || "";
+    if (gk && gk.startsWith('gsk_')) {
+      groqKey = gk; githubPat = pat || "";
       document.getElementById('groqKeyInput').value = gk;
-      document.getElementById('repoUrlInput').value = ru;
       if (pat) document.getElementById('githubPatInput').value = pat;
       showApp();
     }
   } catch(e){}
 });
 document.getElementById('keyBtn').addEventListener('click', saveKeys);
-['groqKeyInput','repoUrlInput','githubPatInput'].forEach(id => {
+['groqKeyInput','githubPatInput'].forEach(id => {
   document.getElementById(id).addEventListener('keydown', e => { if(e.key==='Enter') saveKeys(); });
 });
 
@@ -310,16 +300,16 @@ async function callGroq(messages, extraSystem) {
 }
 
 // ── GitHub harness patch ──────────────────────────────────────────────────────
-function parseRepoFromUrl(url) {
+function parseRepoFromUrl() {
   try {
-    const u = new URL(url);
+    const u = new URL(window.location.href);
     const owner = u.hostname.split('.')[0];
-    const repo  = u.pathname.replace(/^\//, '').replace(/\/$/, '') || 'magic-deck-assistant';
+    const repo  = u.pathname.replace(/^\//, '').split('/')[0] || 'magic-deck-assistant';
     return { owner, repo };
   } catch { return null; }
 }
 async function getHarnessSha() {
-  const { owner, repo } = parseRepoFromUrl(repoUrl);
+  const { owner, repo } = parseRepoFromUrl();
   const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/harness.md`,
     { headers: { 'Authorization': 'Bearer ' + githubPat, 'Accept': 'application/vnd.github+json' } });
   if (!r.ok) throw new Error('No se pudo leer harness.md en GitHub: ' + r.status);
@@ -327,7 +317,7 @@ async function getHarnessSha() {
   return d.sha;
 }
 async function commitHarnessPatch(newContent, reason) {
-  const { owner, repo } = parseRepoFromUrl(repoUrl);
+  const { owner, repo } = parseRepoFromUrl();
   const sha = await getHarnessSha();
   const encoded = btoa(unescape(encodeURIComponent(newContent)));
   const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/harness.md`, {
