@@ -121,6 +121,11 @@
 <script>
 var groqKey = '', githubPat = '', harness = '';
 var conversationHistory = [], isLoading = false, pendingPatch = null;
+var conversationSummary = '';   // compressed summary of older turns
+var CHAT_MODEL  = 'llama-3.1-8b-instant';       // B: fast cheap model for chat
+var BUILD_MODEL = 'llama-3.3-70b-versatile';    // B: precise model for decklists
+var WINDOW_SIZE = 6;   // C: max turns to keep in full history
+var SUMMARY_EVERY = 8; // A: summarize after this many total turns
 
 function saveKeys() {
   var gk = document.getElementById('groqKeyInput').value.trim();
@@ -172,7 +177,7 @@ async function loadHarness() {
   }
 }
 async function reloadHarness() {
-  conversationHistory = []; pendingPatch = null;
+  conversationHistory = []; pendingPatch = null; conversationSummary = '';
   document.getElementById('chat').innerHTML = '';
   welcome(); await loadHarness();
 }
@@ -182,6 +187,7 @@ function welcome() {
   appendBubble('ai',
     '<p>¡Hola! Soy tu asistente de mazos de <strong>Premodern</strong>. 🃏</p>' +
     '<p>Cuéntame qué quieres construir — una carta, un estilo, una idea — y exploraremos juntos.</p>' +
+    '<p style="font-size:11px;color:var(--muted)">Chat: Llama 3.1 8B · Construcción: Llama 3.3 70B · Historial comprimido automáticamente</p>' +
     (githubPat ? '<p style="font-size:12px;color:var(--legal)">✓ Harness editable — si algo está mal dime "corrígelo en el harness".</p>' : '')
   );
 }
@@ -283,13 +289,27 @@ function selectHarnessSections(messages, extra) {
   return result.join('\n\n') || harness.split('## #METAGAME')[0];
 }
 
-async function callGroq(messages, extra) {
+// ── B: Dual model call ───────────────────────────────────────────────────────
+async function callGroq(messages, extra, forceModel) {
+  var model = forceModel || CHAT_MODEL;
   var system = selectHarnessSections(messages, extra) + (extra?'\n\n---\nINSTRUCCIÓN:\n'+extra:'');
+
+  // C: Sliding window — prepend summary + keep last WINDOW_SIZE turns
+  var windowedMessages = messages;
+  if (messages.length > WINDOW_SIZE) {
+    windowedMessages = messages.slice(-WINDOW_SIZE);
+    if (conversationSummary) {
+      windowedMessages = [{role:'user', content:'[Resumen de conversación anterior: '+conversationSummary+']'},
+                          {role:'assistant', content:'Entendido, continúo desde ahí.'}]
+                         .concat(windowedMessages);
+    }
+  }
+
   var resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method:'POST',
     headers:{'Content-Type':'application/json','Authorization':'Bearer '+groqKey},
-    body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:2000,
-      messages:[{role:'system',content:system}].concat(messages)})
+    body:JSON.stringify({model:model, max_tokens:2000,
+      messages:[{role:'system',content:system}].concat(windowedMessages)})
   });
   if (!resp.ok) {
     var err=await resp.json().catch(function(){return{};});
@@ -297,6 +317,36 @@ async function callGroq(messages, extra) {
     throw new Error((err.error&&err.error.message)||'HTTP '+resp.status);
   }
   return (await resp.json()).choices[0].message.content||'';
+}
+
+// ── A: Summarize old history every SUMMARY_EVERY turns ────────────────────────
+async function maybeSummarizeHistory() {
+  var totalTurns = conversationHistory.filter(function(m){return m.role==='user';}).length;
+  if (totalTurns < SUMMARY_EVERY || totalTurns % SUMMARY_EVERY !== 0) return;
+
+  // Summarize oldest half of history
+  var toSummarize = conversationHistory.slice(0, -WINDOW_SIZE);
+  if (toSummarize.length < 2) return;
+
+  var summaryPrompt = 'Resume esta conversación sobre construcción de mazos Magic Premodern en máximo 150 tokens. ' +
+    'Incluye: arquetipo discutido, cartas clave mencionadas, decisiones tomadas, preferencias del usuario. ' +
+    'Solo el resumen, sin explicaciones.';
+
+  try {
+    var newSummary = await callGroq(
+      toSummarize.concat([{role:'user', content:summaryPrompt}]),
+      '', CHAT_MODEL
+    );
+    // Prepend to existing summary if any
+    conversationSummary = conversationSummary
+      ? conversationSummary + ' | ' + newSummary
+      : newSummary;
+    // Keep only recent history
+    conversationHistory = conversationHistory.slice(-WINDOW_SIZE);
+    console.log('History summarized, tokens saved ~' + (toSummarize.length * 225));
+  } catch(e) {
+    console.warn('Summary failed, keeping full history:', e.message);
+  }
 }
 
 function parseRepo() {
@@ -331,7 +381,7 @@ async function requestHarnessPatch(userFeedback) {
     'o {"type":"replace","reason":"...","old_text":"texto exacto","new_text":"nuevo"}\n'+
     'o {"type":"clarify","question":"pregunta"}\n\nHARNESS:\n'+harness.slice(0,4000);
   var reply;
-  try{reply=await callGroq([{role:'user',content:prompt}],'');removeTyping();s.remove();}
+  try{reply=await callGroq([{role:'user',content:prompt}],'',CHAT_MODEL);removeTyping();s.remove();}
   catch(e){removeTyping();s.remove();throw e;}
   var patch;
   try{patch=JSON.parse(reply.replace(/```json|```/g,'').trim());}
@@ -466,8 +516,12 @@ async function sendMessage() {
     ?'Construye el mazo en bloques (Motor, Soporte, Interacción, Wincon, Tierras). Al final:\n\nLISTA FINAL:\n4 Nombre\n...(EXACTAMENTE 60 cartas)\n\nSIDEBOARD:\n2 Carta\n...(15 cartas)'
     :isFirst?'Primera interacción. Sigue el PRINCIPIO FUNDAMENTAL: reacciona, explora, presenta opciones, detecta huecos. No hagas cuestionario.'
     :'Continúa reactivo. Señala huecos, corrige ilegales al momento, propón construir cuando el esquema esté listo.';
+  // B: use precise model only when building a list
+  var model = wantsList ? BUILD_MODEL : CHAT_MODEL;
+  // A: maybe summarize history before this call
+  await maybeSummarizeHistory();
   var reply;
-  try{reply=await callGroq(conversationHistory,extra);}
+  try{reply=await callGroq(conversationHistory,extra,model);}
   catch(e){
     removeTyping();s.remove();clearStatuses();
     appendBubble('ai','<p style="color:var(--illegal)">Error: '+e.message+'</p>');
