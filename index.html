@@ -12,6 +12,8 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+
+  /* KEY SCREEN */
   #keyScreen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:100;overflow-y:auto}
   .key-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 24px;width:100%;max-width:420px;display:flex;flex-direction:column;gap:14px}
   .key-logo{font-family:'Cinzel',serif;font-size:20px;color:var(--gold);text-align:center}
@@ -26,6 +28,8 @@
   .key-btn{background:var(--gold);border:none;border-radius:var(--radius);color:#0e0e12;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;padding:12px;cursor:pointer}
   .key-note{font-size:11px;color:var(--muted);text-align:center}
   .key-error{font-size:12px;color:var(--illegal);text-align:center;display:none}
+
+  /* APP */
   #app{display:none;flex-direction:column;height:100dvh}
   header{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
   .header-icon{width:34px;height:34px;background:linear-gradient(135deg,#7b2d2d,#c9a84c);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
@@ -35,6 +39,15 @@
   .icon-btn{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:4px 8px;border-radius:6px;cursor:pointer;white-space:nowrap}
   .harness-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex-shrink:0}
   .harness-dot.loaded{background:var(--legal)}
+
+  /* TABS */
+  .tabs{background:var(--surface);border-bottom:1px solid var(--border);display:flex;flex-shrink:0}
+  .tab{flex:1;padding:10px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;text-align:center;border-bottom:2px solid transparent;transition:all .15s}
+  .tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+  .tab-panel{display:none;flex:1;flex-direction:column;overflow:hidden}
+  .tab-panel.active{display:flex}
+
+  /* CHAT TAB */
   #chat{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
   .msg{display:flex;gap:8px;animation:fadeIn .2s ease}
   .msg.user{flex-direction:row-reverse}
@@ -67,8 +80,43 @@
   #userInput{flex:1;background:#0e0e12;border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:10px 12px;resize:none;min-height:44px;max-height:120px;outline:none;transition:border-color .15s;line-height:1.4}
   #userInput:focus{border-color:var(--gold-dim)}
   #userInput::placeholder{color:var(--muted)}
-  #sendBtn{background:var(--gold);border:none;border-radius:var(--radius);width:44px;height:44px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;align-self:flex-end;transition:opacity .15s}
+  #sendBtn{background:var(--gold);border:none;border-radius:var(--radius);width:44px;height:44px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;align-self:flex-end}
   #sendBtn:disabled{opacity:.4;cursor:not-allowed}
+
+  /* TORNEOS TAB */
+  .search-bar{padding:12px 14px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
+  .search-bar input{flex:1;background:#0e0e12;border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:9px 12px;outline:none;transition:border-color .15s}
+  .search-bar input:focus{border-color:var(--gold-dim)}
+  .search-bar input::placeholder{color:var(--muted)}
+  .search-bar select{background:#0e0e12;border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:9px 10px;outline:none;cursor:pointer}
+  .search-btn{background:var(--gold);border:none;border-radius:var(--radius);color:#0e0e12;font-weight:600;font-size:13px;padding:9px 14px;cursor:pointer;white-space:nowrap}
+  .search-btn:disabled{opacity:.4;cursor:not-allowed}
+
+  #tournamentsPanel{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+
+  .deck-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:border-color .15s}
+  .deck-card:hover{border-color:var(--gold-dim)}
+  .deck-card-header{padding:10px 12px;display:flex;align-items:center;gap:10px}
+  .deck-card-pos{font-size:11px;color:var(--muted);min-width:24px;text-align:center}
+  .deck-card-info{flex:1}
+  .deck-card-player{font-size:13px;font-weight:500}
+  .deck-card-meta{font-size:11px;color:var(--muted);margin-top:2px}
+  .deck-card-wins{font-size:12px;color:var(--legal);font-weight:500}
+  .deck-card-toggle{font-size:11px;color:var(--muted);padding:0 4px}
+
+  .deck-card-body{display:none;padding:0 12px 12px;border-top:1px solid var(--border)}
+  .deck-card-body.open{display:block}
+  .deck-card-list{font-size:12px;line-height:1.8;margin-top:8px;column-count:2;column-gap:16px}
+  .deck-card-list div{break-inside:avoid}
+  .deck-card-list .qty{color:var(--muted);margin-right:4px}
+  .deck-card-list .highlight{color:var(--gold);font-weight:600}
+  .deck-card-actions{display:flex;gap:8px;margin-top:10px}
+  .deck-action-btn{flex:1;background:#0e0e14;border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;padding:7px;cursor:pointer;text-align:center}
+  .deck-action-btn:hover{border-color:var(--gold-dim)}
+
+  .results-summary{font-size:12px;color:var(--muted);padding:4px 0;text-align:center}
+  .no-results{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px}
+  .no-results span{font-size:32px;display:block;margin-bottom:8px}
   .patch-preview{background:#0e0e14;border-radius:7px;padding:10px;font-size:12px;margin-top:8px}
 </style>
 </head>
@@ -78,9 +126,8 @@
   <div class="key-card">
     <div class="key-logo"><span>🃏</span>Premodern Deck Assistant</div>
     <div class="key-section">
-      <b>API key de Groq (gratis)</b><br>
-      1. Ve a <a href="https://console.groq.com" target="_blank">console.groq.com</a><br>
-      2. Regístrate &rarr; API Keys &rarr; Create key<br>
+      <b>API key de Groq (IA — gratis)</b><br>
+      <a href="https://console.groq.com" target="_blank">console.groq.com</a> &rarr; API Keys &rarr; Create key<br>
       <a href="https://console.groq.com/docs/quickstart" target="_blank" style="font-size:11px;color:var(--gold)">📖 Guía paso a paso &rarr;</a>
     </div>
     <div class="key-input-wrap">
@@ -88,8 +135,16 @@
       <input class="key-input" id="groqKeyInput" type="password" placeholder="gsk_…" autocomplete="off" />
     </div>
     <div class="key-section">
-      <b>GitHub PAT</b> <span style="color:var(--legal);font-size:11px">(opcional — para corregir el harness)</span><br>
-      GitHub &rarr; Settings &rarr; Developer settings &rarr; Personal access tokens &rarr; Tokens (classic) &rarr; scope <b>repo</b>
+      <b>TopDeck.gg API Key</b> <span style="color:var(--legal);font-size:11px">(gratis — decklists de torneo reales)</span><br>
+      <a href="https://topdeck.gg/account" target="_blank">topdeck.gg/account</a> &rarr; API Key
+    </div>
+    <div class="key-input-wrap">
+      <label>TopDeck API Key</label>
+      <input class="key-input" id="topdeckKeyInput" type="password" placeholder="xxxxxxxx-xxxx-…" autocomplete="off" />
+    </div>
+    <div class="key-section">
+      <b>GitHub PAT</b> <span style="color:var(--muted);font-size:11px">(opcional — para corregir el harness)</span><br>
+      GitHub &rarr; Settings &rarr; Developer settings &rarr; Personal access tokens &rarr; scope <b>repo</b>
     </div>
     <div class="key-input-wrap">
       <label>GitHub Personal Access Token (opcional)</label>
@@ -106,30 +161,63 @@
     <div class="header-icon">🃏</div>
     <div>
       <h1>Premodern Deck Assistant</h1>
-      <p>Groq · Llama 3.3 · Scryfall</p>
+      <p>Groq · TopDeck · Scryfall</p>
     </div>
     <div class="header-right">
-      <div class="harness-dot" id="harnessDot" title="Estado del harness"></div>
-      <button class="icon-btn" onclick="reloadHarness()">&#8635; Harness</button>
+      <div class="harness-dot" id="harnessDot" title="Harness"></div>
+      <button class="icon-btn" onclick="reloadHarness()">&#8635;</button>
       <button class="icon-btn" id="patchBtn" onclick="triggerHarnessPatch()" style="display:none">&#9998; Guardar</button>
       <button class="icon-btn" onclick="logout()">&#128273;</button>
     </div>
   </header>
-  <div id="chat"></div>
-  <div class="input-area">
-    <textarea id="userInput" rows="1" placeholder="Cuéntame qué mazo quieres construir…"></textarea>
-    <button id="sendBtn" onclick="sendMessage()">&#10148;</button>
+
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('chat')">💬 Asistente IA</div>
+    <div class="tab" onclick="showTab('torneos')">🏆 Torneos</div>
+  </div>
+
+  <!-- CHAT TAB -->
+  <div class="tab-panel active" id="tab-chat">
+    <div id="chat"></div>
+    <div class="input-area">
+      <textarea id="userInput" rows="1" placeholder="Cuéntame qué mazo quieres construir…"></textarea>
+      <button id="sendBtn" onclick="sendMessage()">&#10148;</button>
+    </div>
+  </div>
+
+  <!-- TORNEOS TAB -->
+  <div class="tab-panel" id="tab-torneos">
+    <div class="search-bar">
+      <input id="searchInput" type="text" placeholder="Carta o temática: Glacial Chasm, control azul, Stiflenought…" />
+      <select id="daysSelect">
+        <option value="30">30 días</option>
+        <option value="60" selected>60 días</option>
+        <option value="90">90 días</option>
+        <option value="180">6 meses</option>
+      </select>
+      <button class="search-btn" id="searchBtn" onclick="searchTournaments()">Buscar</button>
+    </div>
+    <div id="tournamentsPanel">
+      <div class="no-results">
+        <span>🏆</span>
+        Busca decklists reales de torneos Premodern.<br>
+        Puedes filtrar por carta (<em>Glacial Chasm</em>), arquetipo (<em>control azul</em>) o cualquier temática.
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-var groqKey = '', githubPat = '', harness = '';
+var groqKey = '', githubPat = '', harness = '', topdeckKey = '';
 var conversationHistory = [];
 var isLoading = false;
 var pendingPatch = null;
+var allDecks = []; // cache of fetched decks
 
+// ── Keys ──────────────────────────────────────────────────────────────────────
 function saveKeys() {
-  var gk = document.getElementById('groqKeyInput').value.trim();
+  var gk  = document.getElementById('groqKeyInput').value.trim();
+  var tdk = document.getElementById('topdeckKeyInput').value.trim();
   var pat = document.getElementById('githubPatInput').value.trim();
   var err = document.getElementById('keyError');
   err.style.display = 'none';
@@ -138,16 +226,19 @@ function saveKeys() {
     err.style.display = 'block';
     return;
   }
-  groqKey = gk;
-  githubPat = pat;
-  try { localStorage.setItem('groq_key', gk); if (pat) localStorage.setItem('github_pat', pat); } catch(e) {}
+  groqKey = gk; githubPat = pat; topdeckKey = tdk;
+  try {
+    localStorage.setItem('groq_key', gk);
+    if (pat) localStorage.setItem('github_pat', pat);
+    if (tdk) localStorage.setItem('topdeck_key', tdk);
+  } catch(e) {}
   showApp();
 }
 
 function logout() {
-  try { localStorage.removeItem('groq_key'); localStorage.removeItem('github_pat'); } catch(e) {}
-  groqKey = ''; githubPat = ''; harness = '';
-  conversationHistory = []; pendingPatch = null;
+  try { localStorage.removeItem('groq_key'); localStorage.removeItem('github_pat'); localStorage.removeItem('topdeck_key'); } catch(e) {}
+  groqKey = ''; githubPat = ''; harness = ''; topdeckKey = '';
+  conversationHistory = []; pendingPatch = null; allDecks = [];
   document.getElementById('app').style.display = 'none';
   document.getElementById('keyScreen').style.display = 'flex';
 }
@@ -161,20 +252,31 @@ function showApp() {
 
 window.addEventListener('load', function() {
   try {
-    var gk = localStorage.getItem('groq_key');
+    var gk  = localStorage.getItem('groq_key');
     var pat = localStorage.getItem('github_pat');
+    var tdk = localStorage.getItem('topdeck_key');
     if (gk && gk.length > 10) {
-      groqKey = gk;
-      githubPat = pat || '';
+      groqKey = gk; githubPat = pat || ''; topdeckKey = tdk || '';
       document.getElementById('groqKeyInput').value = gk;
       if (pat) document.getElementById('githubPatInput').value = pat;
+      if (tdk) document.getElementById('topdeckKeyInput').value = tdk;
       showApp();
     }
   } catch(e) {}
 });
 
-document.getElementById('groqKeyInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') saveKeys(); });
-document.getElementById('githubPatInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') saveKeys(); });
+['groqKeyInput','topdeckKeyInput','githubPatInput'].forEach(function(id) {
+  document.getElementById(id).addEventListener('keydown', function(e) { if (e.key === 'Enter') saveKeys(); });
+});
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach(function(t, i) {
+    t.classList.toggle('active', (i === 0 && name === 'chat') || (i === 1 && name === 'torneos'));
+  });
+  document.getElementById('tab-chat').classList.toggle('active', name === 'chat');
+  document.getElementById('tab-torneos').classList.toggle('active', name === 'torneos');
+}
 
 // ── Harness ───────────────────────────────────────────────────────────────────
 async function loadHarness() {
@@ -186,7 +288,7 @@ async function loadHarness() {
     harness = await r.text();
     dot.className = 'harness-dot loaded';
   } catch(e) {
-    var s = addStatus('No se pudo cargar harness.md — usando conocimiento base.', 'warn');
+    var s = addStatus('No se pudo cargar harness.md.', 'warn');
     setTimeout(function() { s.remove(); }, 3000);
   }
 }
@@ -198,13 +300,14 @@ async function reloadHarness() {
   await loadHarness();
 }
 
-// ── UI ────────────────────────────────────────────────────────────────────────
+// ── UI helpers ────────────────────────────────────────────────────────────────
 function welcome() {
   document.getElementById('chat').innerHTML = '';
   appendBubble('ai',
     '<p>¡Hola! Soy tu asistente de mazos de <strong>Premodern</strong>. 🃏</p>' +
-    '<p>Cuéntame qué quieres construir — una carta, un estilo, una idea — y exploraremos juntos.</p>' +
-    (githubPat ? '<p style="font-size:12px;color:var(--legal)">✓ Harness editable — si algo está mal dime "corrígelo en el harness".</p>' : '')
+    '<p>Cuéntame qué quieres construir. También puedes buscar decklists reales de torneo en la pestaña <strong>🏆 Torneos</strong>.</p>' +
+    (topdeckKey ? '<p style="font-size:12px;color:var(--legal)">✓ TopDeck conectado — la pestaña Torneos usará decklists reales como contexto.</p>' : '') +
+    (githubPat ? '<p style="font-size:12px;color:var(--legal)">✓ Harness editable.</p>' : '')
   );
 }
 
@@ -238,7 +341,6 @@ function showTyping() {
   bu.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
   wrap.appendChild(av); wrap.appendChild(bu); chat.appendChild(wrap); chat.scrollTop = 9999;
 }
-
 function removeTyping() { var t = document.getElementById('typing-ind'); if (t) t.remove(); }
 
 function md(text) {
@@ -251,6 +353,261 @@ function md(text) {
     .replace(/\n\n+/g, '</p><p>')
     .replace(/\n/g, '<br>');
 }
+
+// ── TopDeck API ───────────────────────────────────────────────────────────────
+async function fetchTopdeckTournaments(days) {
+  var resp = await fetch('https://topdeck.gg/api/v2/tournaments', {
+    method: 'POST',
+    headers: {
+      'Authorization': topdeckKey,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      game: 'Magic: The Gathering',
+      format: 'Premodern',
+      last: days,
+      columns: ['name', 'decklist', 'wins', 'losses']
+    })
+  });
+  if (!resp.ok) {
+    var e = await resp.json().catch(function() { return {}; });
+    throw new Error(e.error || 'TopDeck error ' + resp.status);
+  }
+  return resp.json();
+}
+
+function parseTopdeckDecklist(text) {
+  if (!text) return [];
+  var cards = [];
+  var lines = text.split('\n');
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    // Skip section headers like ~~Mainboard~~
+    if (line.startsWith('~~') || line === '') continue;
+    var m = line.match(/^(\d+)\s+(.+)$/);
+    if (m) {
+      cards.push({ qty: parseInt(m[1]), name: m[2].trim() });
+    }
+  }
+  return cards;
+}
+
+function deckMatchesQuery(deck, query) {
+  if (!query) return true;
+  var q = query.toLowerCase().trim();
+  var deckText = deck.decklist ? deck.decklist.toLowerCase() : '';
+  var playerName = (deck.name || '').toLowerCase();
+  var tournament = (deck.tournament || '').toLowerCase();
+
+  // Direct card name match
+  if (deckText.indexOf(q) !== -1) return true;
+  // Player name
+  if (playerName.indexOf(q) !== -1) return true;
+  // Tournament name
+  if (tournament.indexOf(q) !== -1) return true;
+
+  // Theme/archetype keywords
+  var themes = {
+    'control azul': ['counterspell', 'force of will', 'standstill', 'accumulated knowledge'],
+    'aggro rojo': ['lightning bolt', 'jackal pup', 'ball lightning', 'mogg fanatic'],
+    'control': ['counterspell', 'force of will', 'wrath of god', 'swords to plowshares'],
+    'combo': ['oath of druids', 'aluren', 'replenish', 'opalescence'],
+    'aggro': ['jackal pup', 'savannah lions', 'goblin lackey', 'mogg fanatic'],
+    'midrange': ['pernicious deed', 'spiritmonger', 'duress', 'cabal therapy'],
+    'burn': ['lightning bolt', 'incinerate', 'fireblast', 'price of progress'],
+    'goblins': ['goblin lackey', 'goblin ringleader', 'goblin matron'],
+    'elves': ['llanowar elves', 'wirewood symbiote', 'glimpse of nature'],
+    'enchantress': ['argothian enchantress', "enchantress's presence", 'sterling grove'],
+    'stiflenought': ['phyrexian dreadnought', 'stifle', 'vision charm'],
+    'reanimator': ['reanimate', 'exhume', 'careful study', 'putrid imp'],
+    'prison': ['sphere of resistance', 'tangle wire', 'winter orb'],
+    'lands': ['wasteland', 'exploration', 'crucible of worlds']
+  };
+
+  for (var theme in themes) {
+    if (q.indexOf(theme) !== -1 || theme.indexOf(q) !== -1) {
+      var keywords = themes[theme];
+      var matches = 0;
+      for (var k = 0; k < keywords.length; k++) {
+        if (deckText.indexOf(keywords[k]) !== -1) matches++;
+      }
+      if (matches >= 2) return true;
+    }
+  }
+  return false;
+}
+
+async function searchTournaments() {
+  if (!topdeckKey) {
+    document.getElementById('tournamentsPanel').innerHTML =
+      '<div class="no-results"><span>🔑</span>Necesitas una API key de TopDeck.gg.<br>Añádela en ⚙️ y vuelve a entrar.</div>';
+    return;
+  }
+
+  var query = document.getElementById('searchInput').value.trim();
+  var days = parseInt(document.getElementById('daysSelect').value);
+  var btn = document.getElementById('searchBtn');
+  var panel = document.getElementById('tournamentsPanel');
+
+  btn.disabled = true;
+  btn.textContent = '…';
+  panel.innerHTML = '<div class="no-results"><span class="spin" style="font-size:28px;display:block;margin-bottom:8px">⚙️</span>Cargando torneos de los últimos ' + days + ' días…</div>';
+
+  try {
+    // Use cache if same days value and we have data
+    if (allDecks.length === 0 || allDecks._days !== days) {
+      var tournaments = await fetchTopdeckTournaments(days);
+      allDecks = [];
+      allDecks._days = days;
+      for (var t = 0; t < tournaments.length; t++) {
+        var tournament = tournaments[t];
+        var standings = tournament.standings || [];
+        for (var s = 0; s < standings.length; s++) {
+          var player = standings[s];
+          if (player.decklist && player.decklist.length > 50) {
+            allDecks.push({
+              name: player.name || 'Jugador',
+              tournament: tournament.tournamentName || 'Torneo',
+              date: tournament.startDate ? new Date(tournament.startDate * 1000).toLocaleDateString('es-ES') : '',
+              wins: player.wins || 0,
+              losses: player.losses || 0,
+              standing: s + 1,
+              totalPlayers: standings.length,
+              decklist: player.decklist
+            });
+          }
+        }
+      }
+    }
+
+    // Filter by query
+    var filtered = query
+      ? allDecks.filter(function(d) { return deckMatchesQuery(d, query); })
+      : allDecks;
+
+    renderDeckResults(filtered, query);
+
+  } catch(e) {
+    panel.innerHTML = '<div class="no-results"><span>⚠️</span>Error al conectar con TopDeck:<br>' + e.message + '</div>';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Buscar';
+}
+
+function renderDeckResults(decks, query) {
+  var panel = document.getElementById('tournamentsPanel');
+  panel.innerHTML = '';
+
+  if (decks.length === 0) {
+    panel.innerHTML = '<div class="no-results"><span>🔍</span>No se encontraron mazos' +
+      (query ? ' con "' + query + '"' : '') + '.<br>Prueba con otro término o amplía el rango de días.</div>';
+    return;
+  }
+
+  var summary = document.createElement('div');
+  summary.className = 'results-summary';
+  summary.textContent = decks.length + ' mazo' + (decks.length !== 1 ? 's' : '') +
+    (query ? ' con "' + query + '"' : '') + ' en ' + allDecks._days + ' días';
+  panel.appendChild(summary);
+
+  decks.slice(0, 50).forEach(function(deck, idx) {
+    var cards = parseTopdeckDecklist(deck.decklist);
+    var card = document.createElement('div');
+    card.className = 'deck-card';
+
+    var header = document.createElement('div');
+    header.className = 'deck-card-header';
+    header.innerHTML =
+      '<div class="deck-card-pos">' + deck.standing + '</div>' +
+      '<div class="deck-card-info">' +
+        '<div class="deck-card-player">' + escHtml(deck.name) + '</div>' +
+        '<div class="deck-card-meta">' + escHtml(deck.tournament) + ' · ' + deck.date + '</div>' +
+      '</div>' +
+      '<div class="deck-card-wins">' + deck.wins + '-' + deck.losses + '</div>' +
+      '<div class="deck-card-toggle">▼</div>';
+
+    var body = document.createElement('div');
+    body.className = 'deck-card-body';
+
+    var listHtml = '<div class="deck-card-list">';
+    var lands = cards.filter(function(c) { return isLandName(c.name); });
+    var spells = cards.filter(function(c) { return !isLandName(c.name); });
+    var allSorted = spells.concat(lands);
+    allSorted.forEach(function(c) {
+      var nameHtml = query && c.name.toLowerCase().indexOf(query.toLowerCase()) !== -1
+        ? '<span class="highlight">' + escHtml(c.name) + '</span>'
+        : escHtml(c.name);
+      listHtml += '<div><span class="qty">' + c.qty + 'x</span>' + nameHtml + '</div>';
+    });
+    listHtml += '</div>';
+
+    var actionsHtml =
+      '<div class="deck-card-actions">' +
+        '<div class="deck-action-btn" onclick="useAsContext(' + idx + ', event)">💬 Usar como base en IA</div>' +
+        '<div class="deck-action-btn" onclick="copyDecklist(' + idx + ', event)">📋 Copiar lista</div>' +
+      '</div>';
+
+    body.innerHTML = listHtml + actionsHtml;
+
+    header.addEventListener('click', function() {
+      var isOpen = body.classList.contains('open');
+      body.classList.toggle('open', !isOpen);
+      header.querySelector('.deck-card-toggle').textContent = isOpen ? '▼' : '▲';
+    });
+
+    card.appendChild(header);
+    card.appendChild(body);
+    panel.appendChild(card);
+  });
+
+  if (decks.length > 50) {
+    var more = document.createElement('div');
+    more.className = 'results-summary';
+    more.textContent = '... y ' + (decks.length - 50) + ' más. Afina la búsqueda para ver menos resultados.';
+    panel.appendChild(more);
+  }
+
+  // Store filtered for actions
+  window._filteredDecks = decks;
+}
+
+function useAsContext(idx, event) {
+  event.stopPropagation();
+  var deck = window._filteredDecks[idx];
+  if (!deck) return;
+  // Switch to chat tab and pre-load deck as context
+  showTab('chat');
+  var msg = 'Tengo esta decklist de torneo como referencia (' + deck.name + ', ' + deck.wins + '-' + deck.losses + ' en ' + deck.tournament + '):\n\n' + deck.decklist + '\n\nAyúdame a analizar este mazo y sugerir mejoras o variantes.';
+  conversationHistory.push({ role: 'user', content: msg });
+  appendBubble('user', '<p>📋 Usando como base: <strong>' + escHtml(deck.name) + '</strong> (' + deck.wins + '-' + deck.losses + ') — ' + escHtml(deck.tournament) + '</p>');
+  // Auto-send
+  sendWithText(msg);
+}
+
+function copyDecklist(idx, event) {
+  event.stopPropagation();
+  var deck = window._filteredDecks[idx];
+  if (!deck) return;
+  navigator.clipboard.writeText(deck.decklist).then(function() {
+    alert('Lista copiada al portapapeles');
+  }).catch(function() {
+    alert('No se pudo copiar. Selecciona el texto manualmente.');
+  });
+}
+
+function escHtml(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function isLandName(n) {
+  return /plains|island|swamp|mountain|forest|city of brass|gemstone|ancient tomb|wasteland|rishadan|brushland|underground river|sulfurous springs|karplusan|adarkar|shivan reef|llanowar wastes|yavimaya coast|caves of koilos|battlefield forge|salt marsh|darkwater|shadowblood|sungrass|reflecting pool|windswept heath|flooded strand|polluted delta|bloodstained mire|wooded foothills|mishra|treetop village|forbidding watchtower/i.test(n);
+}
+
+// Enter key on search
+document.getElementById('searchInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') searchTournaments();
+});
 
 // ── Scryfall ──────────────────────────────────────────────────────────────────
 async function scryfallCheck(cardName) {
@@ -287,68 +644,36 @@ function parseDecklist(text) {
 }
 
 function countCards(cards) { return cards.reduce(function(a, c) { return a + c.qty; }, 0); }
+function isLand(n) { return isLandName(n); }
 
-function isLand(n) {
-  return /plains|island|swamp|mountain|forest|city of brass|gemstone|ancient tomb|wasteland|rishadan|brushland|underground river|sulfurous springs|karplusan|adarkar|shivan reef|llanowar wastes|yavimaya coast|caves of koilos|battlefield forge|salt marsh|darkwater|shadowblood|sungrass|timberland|foul orchard|reflecting pool|windswept heath|flooded strand|polluted delta|bloodstained mire|wooded foothills|mishra|treetop village|forbidding watchtower/i.test(n);
-}
-
-// ── Groq ──────────────────────────────────────────────────────────────────────
+// ── Groq + harness section selector ──────────────────────────────────────────
 function selectHarnessSections(messages, extraSystem) {
   if (!harness) return '# Premodern MTG\nEres un experto en Premodern MTG. Responde en español.';
-  
-  // Always include CORE and APRENDIZAJES
   var sections = { CORE: true, APRENDIZAJES: true };
-  
-  // Combine all recent text to detect keywords
   var recentText = messages.slice(-4).map(function(m) { return m.content; }).join(' ').toLowerCase();
   if (extraSystem) recentText += ' ' + extraSystem.toLowerCase();
-  
-  // Load sections based on keywords
-  if (/meta|tier|arquetipo|qu[eé] se juega|competitivo|formato|metagame|qu[eé] decks/i.test(recentText))
-    sections.METAGAME = true;
-  if (/stiflenought|enchantress|sligh|the rock|goblins|psychatog|landstill|replenish|survival|elves|aluren|tinker|zoo|moneyball|parfait|reanimator/i.test(recentText))
-    sections.ARQUETIPOS = true;
-  if (/qu[eé] cartas|staples|opciones para|carta de|carta en|removal|counter|cantrip|tutor|tierras|mana|fijaci/i.test(recentText))
-    sections.STAPLES = true;
-  if (/combo|sinergia|win ?con|interacci[oó]n|loop|infinito|combinar/i.test(recentText))
-    sections.COMBOS = true;
-  if (/cu[aá]ntas tierras|curva|distribuci[oó]n|c[oó]mo construir|ratio|proporci[oó]n/i.test(recentText))
-    sections.CONSTRUCCION = true;
-  if (/legal|baneada|ilegal|no es legal|permitida|formato correcto|sets|de qu[eé] set/i.test(recentText))
-    sections.ADVERTENCIAS = true;
-  
-  // Always load ADVERTENCIAS when building a list
+  if (/meta|tier|arquetipo|qu[eé] se juega|competitivo|metagame/i.test(recentText)) sections.METAGAME = true;
+  if (/stiflenought|enchantress|sligh|the rock|goblins|psychatog|landstill|replenish|survival|elves|aluren|tinker|zoo|moneyball|reanimator/i.test(recentText)) sections.ARQUETIPOS = true;
+  if (/qu[eé] cartas|staples|opciones para|carta de|removal|counter|cantrip|tutor|tierras|mana/i.test(recentText)) sections.STAPLES = true;
+  if (/combo|sinergia|win ?con|loop|infinito/i.test(recentText)) sections.COMBOS = true;
+  if (/cu[aá]ntas tierras|curva|distribuci[oó]n|c[oó]mo construir/i.test(recentText)) sections.CONSTRUCCION = true;
+  if (/legal|baneada|ilegal|no es legal|sets/i.test(recentText)) sections.ADVERTENCIAS = true;
   if (/lista final|dame la lista|construye|60 cartas/i.test(recentText)) {
-    sections.ADVERTENCIAS = true;
-    sections.ARQUETIPOS = true;
-    sections.STAPLES = true;
+    sections.ADVERTENCIAS = true; sections.ARQUETIPOS = true; sections.STAPLES = true;
   }
-  
-  // Parse harness into sections
   var result = [];
-  var currentSection = null;
-  var currentContent = [];
+  var currentSection = null, currentContent = [];
   var lines = harness.split('\n');
-  
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i];
     var sectionMatch = line.match(/^## #([A-Z]+)/);
     if (sectionMatch) {
-      if (currentSection && sections[currentSection]) {
-        result.push(currentContent.join('\n'));
-      }
-      currentSection = sectionMatch[1];
-      currentContent = [line];
-    } else {
-      currentContent.push(line);
-    }
+      if (currentSection && sections[currentSection]) result.push(currentContent.join('\n'));
+      currentSection = sectionMatch[1]; currentContent = [line];
+    } else { currentContent.push(line); }
   }
-  if (currentSection && sections[currentSection]) {
-    result.push(currentContent.join('\n'));
-  }
-  
-  var selected = result.join('\n\n');
-  return selected || harness.split('## #METAGAME')[0]; // fallback to CORE only
+  if (currentSection && sections[currentSection]) result.push(currentContent.join('\n'));
+  return result.join('\n\n') || harness.split('## #METAGAME')[0];
 }
 
 async function callGroq(messages, extraSystem) {
@@ -365,29 +690,25 @@ async function callGroq(messages, extraSystem) {
     if (resp.status === 401) { logout(); throw new Error('API key de Groq inválida.'); }
     throw new Error((err.error && err.error.message) || 'HTTP ' + resp.status);
   }
-  var data = await resp.json();
-  return (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
+  return (await resp.json()).choices[0].message.content || '';
 }
 
-// ── GitHub harness patch ──────────────────────────────────────────────────────
+// ── GitHub patch ──────────────────────────────────────────────────────────────
 function parseRepo() {
   try {
     var u = new URL(window.location.href);
     var owner = u.hostname.split('.')[0];
-    var parts = u.pathname.replace(/^\//, '').split('/');
-    var repo = parts[0] || 'magic-deck-assistant';
+    var repo = u.pathname.replace(/^\//, '').split('/')[0] || 'magic-deck-assistant';
     return { owner: owner, repo: repo };
   } catch(e) { return null; }
 }
 
 async function getHarnessSha() {
   var rp = parseRepo();
-  var r = await fetch('https://api.github.com/repos/' + rp.owner + '/' + rp.repo + '/contents/harness.md', {
-    headers: { 'Authorization': 'Bearer ' + githubPat, 'Accept': 'application/vnd.github+json' }
-  });
-  if (!r.ok) throw new Error('No se pudo leer harness.md en GitHub: ' + r.status);
-  var d = await r.json();
-  return d.sha;
+  var r = await fetch('https://api.github.com/repos/' + rp.owner + '/' + rp.repo + '/contents/harness.md',
+    { headers: { 'Authorization': 'Bearer ' + githubPat, 'Accept': 'application/vnd.github+json' } });
+  if (!r.ok) throw new Error('No se pudo leer harness.md: ' + r.status);
+  return (await r.json()).sha;
 }
 
 async function commitHarnessPatch(newContent, reason) {
@@ -403,97 +724,46 @@ async function commitHarnessPatch(newContent, reason) {
 }
 
 async function requestHarnessPatch(userFeedback) {
-  if (!githubPat) {
-    appendBubble('ai', '<p>Para editar el harness necesito un GitHub PAT. Añádelo en 🔑.</p>');
-    return;
-  }
-  var s = addStatus('Analizando qué corregir…');
-  showTyping();
-
-  var patchPrompt = 'El usuario ha detectado un error o quiere que aprendas algo. Analiza su feedback y devuelve SOLO JSON válido (sin markdown).\n\n' +
-    'Tipos posibles:\n' +
-    '{"type":"learn_card","reason":"max 72 chars","card":"Nombre","problem":"por qué no recomendar","alternative":"alternativa legal o vacío"}\n' +
-    '{"type":"learn_rule","reason":"max 72 chars","rule":"regla de comportamiento"}\n' +
-    '{"type":"replace","reason":"max 72 chars","old_text":"texto LITERAL del harness","new_text":"texto corregido"}\n' +
-    '{"type":"clarify","question":"una pregunta concreta"}\n\n' +
-    'Feedback del usuario: ' + userFeedback + '\n\n' +
-    'HARNESS (primeros 4000 chars):\n' + harness.slice(0, 4000);
-
+  if (!githubPat) { appendBubble('ai', '<p>Necesito un GitHub PAT para editar el harness.</p>'); return; }
+  var s = addStatus('Analizando corrección…'); showTyping();
+  var patchPrompt = 'El usuario dice: ' + userFeedback + '\n\nDevuelve SOLO JSON:\n' +
+    '{"type":"learn_card","reason":"...", "card":"Nombre","problem":"motivo","alternative":"alternativa"}\n' +
+    'o {"type":"learn_rule","reason":"...","rule":"regla"}\n' +
+    'o {"type":"replace","reason":"...","old_text":"texto exacto","new_text":"nuevo"}\n' +
+    'o {"type":"clarify","question":"pregunta"}\n\nHARNESS:\n' + harness.slice(0, 4000);
   var reply;
-  try {
-    reply = await callGroq(conversationHistory.concat([{ role: 'user', content: patchPrompt }]), '');
-    removeTyping(); s.remove();
-  } catch(e) { removeTyping(); s.remove(); throw e; }
-
+  try { reply = await callGroq([{ role: 'user', content: patchPrompt }], ''); removeTyping(); s.remove(); }
+  catch(e) { removeTyping(); s.remove(); throw e; }
   var patch;
   try { patch = JSON.parse(reply.replace(/```json|```/g, '').trim()); }
-  catch(e) { appendBubble('ai', '<p>No pude interpretar la corrección. ¿Puedes describir exactamente qué está mal?</p>'); return; }
-
-  if (patch.type === 'clarify') {
-    appendBubble('ai', '<p>' + patch.question + '</p>');
-    return;
-  }
-
+  catch(e) { appendBubble('ai', '<p>No pude interpretar la corrección. ¿Puedes ser más específico?</p>'); return; }
+  if (patch.type === 'clarify') { appendBubble('ai', '<p>' + patch.question + '</p>'); return; }
   if (patch.type === 'learn_card') {
     var newRow = '| ' + patch.card + ' | ' + patch.problem + ' | ' + (patch.alternative || '—') + ' |';
     var marker = '### Cartas que la IA tiende a sugerir incorrectamente en Premodern';
-    var newHarness;
-    if (harness.indexOf(marker) !== -1) {
-      var afterTable = harness.indexOf('\n### ', harness.indexOf(marker) + marker.length);
-      var insertAt = afterTable > -1 ? afterTable : harness.indexOf('\n\n', harness.indexOf(marker) + marker.length);
-      if (insertAt === -1) insertAt = harness.length;
-      newHarness = harness.slice(0, insertAt) + '\n' + newRow + harness.slice(insertAt);
-    } else {
-      newHarness = harness + '\n\n## CORRECCIONES Y APRENDIZAJES\n\n### Cartas que la IA tiende a sugerir incorrectamente en Premodern\n\n| Carta | Problema | Alternativa legal |\n|-------|----------|-------------------|\n' + newRow + '\n';
-    }
-    pendingPatch = { newHarness: newHarness, reason: patch.reason };
+    var newH = harness.indexOf(marker) !== -1
+      ? harness.slice(0, harness.indexOf('\n### ', harness.indexOf(marker) + 1) || harness.length) + '\n' + newRow + harness.slice(harness.indexOf('\n### ', harness.indexOf(marker) + 1) || harness.length)
+      : harness + '\n\n## CORRECCIONES\n### Cartas que la IA tiende a sugerir incorrectamente en Premodern\n\n| Carta | Problema | Alternativa |\n|-------|----------|-------------|\n' + newRow + '\n';
+    pendingPatch = { newHarness: newH, reason: patch.reason };
     document.getElementById('patchBtn').style.display = 'inline-block';
-    appendBubble('ai',
-      '<p>Entendido, añado esto al harness para no repetir el error:</p>' +
-      '<div class="patch-preview" style="border-left:3px solid var(--legal)">' +
-      '<strong>' + patch.card + '</strong> — ' + patch.problem +
-      (patch.alternative ? '<br><span style="color:var(--muted)">Alternativa: ' + patch.alternative + '</span>' : '') +
-      '</div>' +
-      '<p style="font-size:12px;color:var(--muted);margin-top:8px">Pulsa <strong>✎ Guardar</strong> para guardarlo en GitHub.</p>'
-    );
+    appendBubble('ai', '<p>Añadiré al harness: <strong>' + patch.card + '</strong> → ' + patch.problem + '</p><p style="font-size:12px;color:var(--muted)">Pulsa ✎ Guardar para confirmar.</p>');
     return;
   }
-
   if (patch.type === 'learn_rule') {
     var ruleMarker = '### Reglas de comportamiento aprendidas';
-    var newHarnessR;
-    if (harness.indexOf(ruleMarker) !== -1) {
-      var afterMarker = harness.indexOf('\n', harness.indexOf(ruleMarker)) + 1;
-      newHarnessR = harness.slice(0, afterMarker) + '- ' + patch.rule + '\n' + harness.slice(afterMarker);
-    } else {
-      newHarnessR = harness + '\n\n### Reglas de comportamiento aprendidas\n- ' + patch.rule + '\n';
-    }
-    pendingPatch = { newHarness: newHarnessR, reason: patch.reason };
+    var newHR = harness.indexOf(ruleMarker) !== -1
+      ? harness.replace(ruleMarker + '\n', ruleMarker + '\n- ' + patch.rule + '\n')
+      : harness + '\n\n### Reglas de comportamiento aprendidas\n- ' + patch.rule + '\n';
+    pendingPatch = { newHarness: newHR, reason: patch.reason };
     document.getElementById('patchBtn').style.display = 'inline-block';
-    appendBubble('ai',
-      '<p>De acuerdo, añado esta regla:</p>' +
-      '<div class="patch-preview" style="border-left:3px solid var(--legal)">' + patch.rule + '</div>' +
-      '<p style="font-size:12px;color:var(--muted);margin-top:8px">Pulsa <strong>✎ Guardar</strong> para guardarlo en GitHub.</p>'
-    );
+    appendBubble('ai', '<p>Añadiré regla: <em>' + patch.rule + '</em></p><p style="font-size:12px;color:var(--muted)">Pulsa ✎ Guardar para confirmar.</p>');
     return;
   }
-
   if (patch.type === 'replace') {
-    if (!patch.old_text || harness.indexOf(patch.old_text) === -1) {
-      appendBubble('ai', '<p>No encontré ese fragmento exacto en el harness. ¿Puedes ser más específico?</p>');
-      return;
-    }
-    var newHarnessP = harness.replace(patch.old_text, patch.new_text);
-    pendingPatch = { newHarness: newHarnessP, reason: patch.reason };
+    if (!patch.old_text || harness.indexOf(patch.old_text) === -1) { appendBubble('ai', '<p>No encontré ese fragmento exacto. ¿Puedes ser más específico?</p>'); return; }
+    pendingPatch = { newHarness: harness.replace(patch.old_text, patch.new_text), reason: patch.reason };
     document.getElementById('patchBtn').style.display = 'inline-block';
-    appendBubble('ai',
-      '<p>Corrección localizada:</p>' +
-      '<div class="patch-preview" style="border-left:3px solid var(--warning)">' +
-      '<div style="color:#e88;margin-bottom:4px">❌ ' + patch.old_text.slice(0, 150).replace(/</g, '&lt;') + '</div>' +
-      '<div style="color:var(--legal)">✅ ' + patch.new_text.slice(0, 150).replace(/</g, '&lt;') + '</div>' +
-      '</div>' +
-      '<p style="font-size:12px;color:var(--muted);margin-top:8px">Pulsa <strong>✎ Guardar</strong> para guardarlo en GitHub.</p>'
-    );
+    appendBubble('ai', '<p>Corrección: <del style="color:#e88">' + patch.old_text.slice(0,100) + '</del> → <ins style="color:var(--legal)">' + patch.new_text.slice(0,100) + '</ins></p><p style="font-size:12px;color:var(--muted)">Pulsa ✎ Guardar para confirmar.</p>');
   }
 }
 
@@ -503,22 +773,21 @@ async function triggerHarnessPatch() {
   btn.textContent = '⏳'; btn.disabled = true;
   try {
     await commitHarnessPatch(pendingPatch.newHarness, pendingPatch.reason);
-    harness = pendingPatch.newHarness;
-    pendingPatch = null;
+    harness = pendingPatch.newHarness; pendingPatch = null;
     btn.style.display = 'none'; btn.textContent = '✎ Guardar'; btn.disabled = false;
     document.getElementById('harnessDot').className = 'harness-dot loaded';
-    appendBubble('ai', '<p>✅ Aprendizaje guardado en GitHub. Lo tendré en cuenta a partir de ahora.</p>');
+    appendBubble('ai', '<p>✅ Guardado en GitHub.</p>');
   } catch(e) {
     btn.textContent = '✎ Guardar'; btn.disabled = false;
-    appendBubble('ai', '<p style="color:var(--illegal)">Error al guardar: ' + e.message + '<br>Comprueba que el PAT tiene permisos <strong>repo</strong>.</p>');
+    appendBubble('ai', '<p style="color:var(--illegal)">Error: ' + e.message + '</p>');
   }
 }
 
 function isPatchRequest(text) {
-  return /harness|arnés|arnes|corrígelo|corrigelo|está mal en el|esta mal en el|actualiza el harness|guardalo en el harness|incorrecto en el harness/i.test(text);
+  return /harness|arnés|arnes|corrígelo|corrigelo|está mal en el|esta mal en el|actualiza el harness|guardalo en el harness/i.test(text);
 }
 
-// ── Decklist ──────────────────────────────────────────────────────────────────
+// ── Decklist render ───────────────────────────────────────────────────────────
 function responseHasDecklist(text) { return countCards(parseDecklist(text)) >= 50; }
 
 async function renderValidatedDecklist(rawText) {
@@ -527,42 +796,32 @@ async function renderValidatedDecklist(rawText) {
   var cards   = listMatch ? parseDecklist(listMatch[1]) : parseDecklist(rawText);
   var sbCards = sbMatch   ? parseDecklist(sbMatch[1])   : [];
   if (cards.length === 0) { appendBubble('ai', '<p>No pude extraer la lista. Dime <em>"dame la lista"</em>.</p>'); return; }
-
   var s = addStatus('Verificando ' + cards.length + ' cartas en Scryfall…');
   var validated = await Promise.all(cards.map(async function(c) { return Object.assign({}, c, await scryfallCheck(c.name)); }));
   s.remove();
-
   var illegal = validated.filter(function(c) { return !c.ok; });
   var finalCards = validated.filter(function(c) { return c.ok; });
-
   if (illegal.length > 0) {
     var names = illegal.map(function(c) { return c.name; }).join(', ');
-    var sr = addStatus('Reemplazando ' + illegal.length + ' carta(s) ilegal(es)…', 'warn');
-    showTyping();
+    var sr = addStatus('Reemplazando ' + illegal.length + ' ilegal(es)…', 'warn'); showTyping();
     try {
-      var legalList = finalCards.map(function(c) { return c.qty + ' ' + c.name; }).join('\n');
-      var fixed = await callGroq(
-        conversationHistory.concat([{ role: 'user', content: 'Corrige ilegales: ' + names }]),
-        'Devuelve SOLO lista "4 Nombre" una por línea, 60 cartas. Ilegales a sustituir: ' + names + '. Legales confirmadas:\n' + legalList
-      );
+      var fixed = await callGroq(conversationHistory.concat([{ role: 'user', content: 'Corrige ilegales: ' + names }]),
+        'Devuelve SOLO lista "4 Nombre" una por línea, 60 cartas. Ilegales: ' + names + '. Legales:\n' + finalCards.map(function(c){return c.qty+' '+c.name;}).join('\n'));
       removeTyping(); sr.remove();
       var v2 = await Promise.all(parseDecklist(fixed).map(async function(c) { return Object.assign({}, c, await scryfallCheck(c.name)); }));
       finalCards = v2.filter(function(c) { return c.ok; });
     } catch(e) { removeTyping(); sr.remove(); }
   }
   clearStatuses();
-
   finalCards.forEach(function(c) { c._isLand = isLand(c.name); });
   var spells = finalCards.filter(function(c) { return !c._isLand; });
   var lands  = finalCards.filter(function(c) { return c._isLand; });
-
   var chat = document.getElementById('chat');
   var wrap = document.createElement('div'); wrap.className = 'msg ai';
   var av = document.createElement('div'); av.className = 'avatar'; av.textContent = '🤖';
   var bu = document.createElement('div'); bu.className = 'bubble';
   bu.innerHTML = '<p>Mazo <strong>Premodern</strong> — verificado en Scryfall:</p>';
   var dl = document.createElement('div'); dl.className = 'decklist';
-
   function addSec(title, list) {
     if (!list.length) return;
     var t = document.createElement('div'); t.className = 'deck-section-title';
@@ -574,11 +833,9 @@ async function renderValidatedDecklist(rawText) {
     });
   }
   addSec('Hechizos', spells); addSec('Tierras', lands);
-
   var footer = document.createElement('div');
   footer.style.cssText = 'font-size:11px;color:var(--muted);margin-top:8px;text-align:right';
   footer.textContent = countCards(finalCards) + ' cartas · Scryfall ✓'; dl.appendChild(footer);
-
   if (sbCards.length > 0) {
     var sbt = document.createElement('div'); sbt.className = 'deck-section-title';
     sbt.style.marginTop = '12px'; sbt.textContent = 'Sideboard (' + countCards(sbCards) + ')'; dl.appendChild(sbt);
@@ -593,6 +850,34 @@ async function renderValidatedDecklist(rawText) {
 }
 
 // ── Send ──────────────────────────────────────────────────────────────────────
+async function sendWithText(text) {
+  showTyping();
+  var s = addStatus('Pensando…');
+  var isFirst = conversationHistory.filter(function(m) { return m.role === 'user'; }).length <= 1;
+  var wantsList = /^(dame|construye|hazme|lista|genera|adelante|perfecto|venga|listo|ok construye)/i.test(text.trim());
+  var extra = wantsList
+    ? 'Construye el mazo en bloques (Motor, Soporte, Interacción, Wincon, Tierras). Al final:\n\nLISTA FINAL:\n4 Nombre\n...(EXACTAMENTE 60 cartas)\n\nSIDEBOARD:\n2 Carta\n...(15 cartas)'
+    : isFirst ? 'Primera interacción. Sigue el PRINCIPIO FUNDAMENTAL: reacciona, explora, presenta opciones, detecta huecos. No hagas cuestionario.'
+    : 'Continúa reactivo. Señala huecos, corrige ilegales al momento, propón construir cuando el esquema esté listo.';
+  var reply;
+  try { reply = await callGroq(conversationHistory, extra); }
+  catch(e) {
+    removeTyping(); s.remove(); clearStatuses();
+    appendBubble('ai', '<p style="color:var(--illegal)">Error: ' + e.message + '</p>');
+    return;
+  }
+  removeTyping(); s.remove();
+  conversationHistory.push({ role: 'assistant', content: reply });
+  if (responseHasDecklist(reply)) {
+    var reasoning = reply.replace(/LISTA FINAL[\s\S]*/i, '').trim();
+    if (reasoning.length > 80) appendBubble('ai', '<p>' + md(reasoning) + '</p>');
+    await renderValidatedDecklist(reply);
+  } else {
+    appendBubble('ai', '<p>' + md(reply) + '</p>');
+  }
+  clearStatuses();
+}
+
 async function sendMessage() {
   var input = document.getElementById('userInput');
   var text = input.value.trim();
@@ -601,51 +886,16 @@ async function sendMessage() {
   input.value = ''; input.style.height = 'auto';
   document.getElementById('sendBtn').disabled = true;
   appendBubble('user', '<p>' + text + '</p>');
-
   if (isPatchRequest(text)) {
     try { await requestHarnessPatch(text); }
     catch(e) { appendBubble('ai', '<p style="color:var(--illegal)">Error: ' + e.message + '</p>'); }
-    isLoading = false; document.getElementById('sendBtn').disabled = false; input.focus();
-    return;
-  }
-
-  conversationHistory.push({ role: 'user', content: text });
-  showTyping();
-  var s = addStatus('Pensando…');
-
-  var isFirst = conversationHistory.filter(function(m) { return m.role === 'user'; }).length === 1;
-  var wantsList = /^(dame|construye|hazme|lista|genera|adelante|perfecto|venga|listo|ok construye)/i.test(text.trim());
-
-  var extra = wantsList
-    ? 'El usuario quiere la lista final. Construye por bloques (Motor, Soporte, Interacción, Wincon, Tierras) con breve explicación de cada uno. Al final:\n\nLISTA FINAL:\n4 Nombre\n...(EXACTAMENTE 60 cartas)\n\nSIDEBOARD:\n2 Carta\n...(exactamente 15 cartas)'
-    : isFirst
-    ? 'Primera interacción. Sigue el PRINCIPIO FUNDAMENTAL: reacciona a su idea, explora qué existe en el formato, presenta opciones concretas, detecta huecos. NO hagas un cuestionario. Piensa en voz alta con él.'
-    : 'Continúa la conversación reactiva. Señala huecos si los hay. Si el usuario menciona cartas ilegales, corrígelas al momento. Si el esquema está definido, propón construir.';
-
-  var reply;
-  try {
-    reply = await callGroq(conversationHistory, extra);
-  } catch(e) {
-    removeTyping(); s.remove(); clearStatuses();
-    appendBubble('ai', '<p style="color:var(--illegal)">Error: ' + e.message + '</p>');
-    conversationHistory.pop();
-    isLoading = false; document.getElementById('sendBtn').disabled = false; input.focus();
-    return;
-  }
-
-  removeTyping(); s.remove();
-  conversationHistory.push({ role: 'assistant', content: reply });
-
-  if (responseHasDecklist(reply)) {
-    var reasoning = reply.replace(/LISTA FINAL[\s\S]*/i, '').trim();
-    if (reasoning.length > 80) appendBubble('ai', '<p>' + md(reasoning) + '</p>');
-    await renderValidatedDecklist(reply);
   } else {
-    appendBubble('ai', '<p>' + md(reply) + '</p>');
+    conversationHistory.push({ role: 'user', content: text });
+    await sendWithText(text);
   }
-
-  clearStatuses();
-  isLoading = false; document.getElementById('sendBtn').disabled = false; input.focus();
+  isLoading = false;
+  document.getElementById('sendBtn').disabled = false;
+  input.focus();
 }
 
 document.getElementById('userInput').addEventListener('keydown', function(e) {
