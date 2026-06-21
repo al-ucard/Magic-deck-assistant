@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Magic Deck Assistant</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@400;500&display=swap');
+  :root {
+    --bg:#0e0e12;--surface:#16161e;--border:#2a2a3a;--gold:#c9a84c;--gold-dim:#7a6330;
+    --text:#e8e4d9;--muted:#7a7890;--legal:#4caf82;--illegal:#cf4c4c;--warning:#e0a840;--radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+
+  /* KEY SCREEN */
+  #keyScreen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:100}
+  .key-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 24px;width:100%;max-width:400px;display:flex;flex-direction:column;gap:16px}
+  .key-logo{font-family:'Cinzel',serif;font-size:22px;color:var(--gold);text-align:center}
+  .key-logo span{font-size:28px;display:block;margin-bottom:4px}
+  .key-steps{background:#0e0e14;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.8;color:var(--muted)}
+  .key-steps b{color:var(--text)}.key-steps a{color:var(--gold);text-decoration:none}
+  .key-input-wrap{display:flex;flex-direction:column;gap:6px}
+  .key-input-wrap label{font-size:12px;color:var(--muted)}
+  #apiKeyInput{background:#0e0e12;border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:monospace;font-size:13px;padding:10px 12px;outline:none;width:100%;transition:border-color .15s}
+  #apiKeyInput:focus{border-color:var(--gold-dim)}
+  #apiKeyInput::placeholder{color:var(--muted);font-family:'Inter',sans-serif}
+  .key-btn{background:var(--gold);border:none;border-radius:var(--radius);color:#0e0e12;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;padding:12px;cursor:pointer;transition:opacity .15s}
+  .key-btn:hover{opacity:.85}
+  .key-note{font-size:11px;color:var(--muted);text-align:center}
+  #keyError{font-size:12px;color:var(--illegal);text-align:center;display:none}
+
+  /* APP */
+  #app{display:none;flex-direction:column;height:100dvh}
+  header{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .header-icon{width:34px;height:34px;background:linear-gradient(135deg,#7b2d2d,#c9a84c);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+  header h1{font-family:'Cinzel',serif;font-size:14px;color:var(--gold)}
+  header p{font-size:11px;color:var(--muted)}
+  .logout-btn{margin-left:auto;background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:4px 8px;border-radius:6px;cursor:pointer;flex-shrink:0}
+  .format-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;gap:6px;flex-shrink:0;overflow-x:auto;scrollbar-width:none}
+  .format-bar::-webkit-scrollbar{display:none}
+  .format-label{font-size:11px;color:var(--muted);white-space:nowrap}
+  .format-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:20px;font-size:11px;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:'Inter',sans-serif}
+  .format-btn:hover{border-color:var(--gold-dim);color:var(--text)}
+  .format-btn.active{background:var(--gold);border-color:var(--gold);color:#0e0e12;font-weight:600}
+  #chat{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:14px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+  .msg{display:flex;gap:8px;animation:fadeIn .2s ease}
+  .msg.user{flex-direction:row-reverse}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1}}
+  .avatar{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;margin-top:2px}
+  .msg.user .avatar{background:#2d2d5e}
+  .msg.ai .avatar{background:linear-gradient(135deg,#7b2d2d,#c9a84c)}
+  .bubble{max-width:86%;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:14px;line-height:1.55}
+  .msg.user .bubble{background:#1e1e3a;border-color:#3a3a6a}
+  .bubble p+p{margin-top:7px}
+  .bubble strong{color:var(--gold)}
+  .cards-block{margin-top:10px;display:flex;flex-direction:column;gap:5px}
+  .card-row{display:flex;align-items:center;gap:8px;background:#0e0e14;border-radius:6px;padding:5px 9px;border:1px solid var(--border);font-size:12px}
+  .card-row.legal{border-left:3px solid var(--legal)}
+  .card-row.illegal{border-left:3px solid var(--illegal);opacity:.75}
+  .card-row.unknown{border-left:3px solid var(--warning)}
+  .card-name{flex:1;font-weight:500}
+  .card-reason{font-size:10px;color:var(--muted)}
+  .badge{font-size:10px;padding:2px 5px;border-radius:4px;font-weight:600;flex-shrink:0}
+  .badge.legal{background:#1a3d2a;color:var(--legal)}
+  .badge.illegal{background:#3d1a1a;color:var(--illegal)}
+  .badge.unknown{background:#3d2e0a;color:var(--warning)}
+  .validation-header{font-size:11px;color:var(--muted);margin:8px 0 4px;display:flex;align-items:center;gap:6px}
+  .validation-header::before{content:'';display:block;height:1px;width:16px;background:var(--border)}
+  .typing{display:flex;gap:4px;align-items:center;padding:4px 0}
+  .typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce .9s infinite}
+  .typing span:nth-child(2){animation-delay:.15s}
+  .typing span:nth-child(3){animation-delay:.3s}
+  @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+  .input-area{background:var(--surface);border-top:1px solid var(--border);padding:10px 14px;display:flex;gap:8px;flex-shrink:0}
+  #userInput{flex:1;background:#0e0e12;border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:10px 12px;resize:none;min-height:44px;max-height:110px;outline:none;transition:border-color .15s;line-height:1.4}
+  #userInput:focus{border-color:var(--gold-dim)}
+  #userInput::placeholder{color:var(--muted)}
+  #sendBtn{background:var(--gold);border:none;border-radius:var(--radius);width:44px;height:44px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;align-self:flex-end;transition:opacity .15s}
+  #sendBtn:disabled{opacity:.4;cursor:not-allowed}
+  .error-banner{background:#3d1a1a;border:1px solid var(--illegal);border-radius:7px;padding:8px 12px;font-size:12px;color:#e88;margin-top:6px}
+  .system-note{text-align:center;font-size:11px;color:var(--muted);padding:2px 0}
+</style>
+</head>
+<body>
+
+<div id="keyScreen">
+  <div class="key-card">
+    <div class="key-logo"><span>🃏</span>Magic Deck Assistant</div>
+    <div class="key-steps">
+      <b>Groq es gratis. Necesitas una API key:</b><br>
+      1. Ve a <a href="https://console.groq.com" target="_blank">console.groq.com</a><br>
+      2. Regístrate (sin tarjeta de crédito)<br>
+      3. Entra en <b>API Keys &rarr; Create key</b><br>
+      4. Copia y pega la key aquí abajo
+    </div>
+    <div class="key-input-wrap">
+      <label>API key de Groq</label>
+      <input id="apiKeyInput" type="password" placeholder="gsk_…" autocomplete="off" spellcheck="false" />
+    </div>
+    <div id="keyError">API key incorrecta. Asegúrate de que empieza por gsk_</div>
+    <button class="key-btn" id="keyBtn">Entrar →</button>
+    <p class="key-note">La key se guarda solo en tu navegador.<br>Nunca sale de tu dispositivo.</p>
+  </div>
+</div>
+
+<div id="app">
+  <header>
+    <div class="header-icon">🃏</div>
+    <div>
+      <h1>Magic Deck Assistant</h1>
+      <p>Groq · Llama 3.3 · Validación Scryfall</p>
+    </div>
+    <button class="logout-btn" onclick="logout()">🔑 Key</button>
+  </header>
+  <div class="format-bar">
+    <span class="format-label">Formato:</span>
+    <button class="format-btn" data-fmt="standard">Standard</button>
+    <button class="format-btn" data-fmt="pioneer">Pioneer</button>
+    <button class="format-btn" data-fmt="modern">Modern</button>
+    <button class="format-btn" data-fmt="legacy">Legacy</button>
+    <button class="format-btn" data-fmt="vintage">Vintage</button>
+    <button class="format-btn active" data-fmt="premodern">Premodern</button>
+    <button class="format-btn" data-fmt="commander">Commander</button>
+    <button class="format-btn" data-fmt="pauper">Pauper</button>
+  </div>
+  <div id="chat"></div>
+  <div class="input-area">
+    <textarea id="userInput" rows="1" placeholder="Pídeme un mazo, cartas para tu estrategia…"></textarea>
+    <button id="sendBtn">➤</button>
+  </div>
+</div>
+
+<script>
+let currentFormat = "premodern";
+let conversationHistory = [];
+let isLoading = false;
+let groqKey = "";
+
+function saveKey() {
+  const val = document.getElementById('apiKeyInput').value.trim();
+  if (!val.startsWith('gsk_') || val.length < 20) {
+    document.getElementById('keyError').style.display = 'block';
+    return;
+  }
+  groqKey = val;
+  try { localStorage.setItem('groq_key', val); } catch(e){}
+  showApp();
+}
+
+function logout() {
+  try { localStorage.removeItem('groq_key'); } catch(e){}
+  groqKey = "";
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('keyScreen').style.display = 'flex';
+  document.getElementById('apiKeyInput').value = '';
+  document.getElementById('keyError').style.display = 'none';
+}
+
+function showApp() {
+  document.getElementById('keyScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  if (document.getElementById('chat').children.length === 0) {
+    appendMessage('ai', '<p>Hola! Soy tu asistente de mazos de Magic. Formato activo: <strong>Premodern</strong>.</p><p>Cada carta que mencione se verifica en Scryfall. Prueba: <em>"quiero un control azul"</em> o <em>"mazo aggro rojo barato"</em>.</p>');
+  }
+}
+
+window.addEventListener('load', () => {
+  try {
+    const saved = localStorage.getItem('groq_key');
+    if (saved && saved.startsWith('gsk_')) { groqKey = saved; document.getElementById('apiKeyInput').value = saved; showApp(); }
+  } catch(e){}
+});
+
+document.getElementById('keyBtn').addEventListener('click', saveKey);
+document.getElementById('apiKeyInput').addEventListener('keydown', e => { if (e.key === 'Enter') saveKey(); });
+
+async function checkCardLegality(cardName, format) {
+  try {
+    const r = await fetch('https://api.scryfall.com/cards/named?fuzzy=' + encodeURIComponent(cardName));
+    if (!r.ok) return { legal: false, status: "not_found", reason: "No encontrada" };
+    const d = await r.json();
+    const s = d.legalities?.[format];
+    if (!s || s === "not_legal") return { legal: false, status: "illegal", reason: "No legal en " + format, scryfallName: d.name };
+    if (s === "banned")     return { legal: false, status: "banned",     reason: "Baneada en " + format, scryfallName: d.name };
+    if (s === "restricted") return { legal: true,  status: "restricted", reason: "Restringida (max 1)", scryfallName: d.name };
+    if (s === "legal")      return { legal: true,  status: "legal",      reason: null, scryfallName: d.name };
+    return { legal: false, status: "unknown", reason: "Estado: " + s, scryfallName: d.name };
+  } catch { return { legal: null, status: "error", reason: "Error Scryfall" }; }
+}
+
+function extractCardNames(text) {
+  const cards = new Set();
+  const bold = /\*{1,2}([^*\n]{3,40})\*{1,2}/g;
+  let m;
+  while ((m = bold.exec(text)) !== null) { const n = m[1].trim(); if (n.length > 2) cards.add(n); }
+  const lines = /^[\s\-x]*(?:\d+x?\s+)?([A-Z][^\n,()]{2,38}?)(?:\s*[(\-].*)?$/gm;
+  while ((m = lines.exec(text)) !== null) {
+    const n = m[1].trim();
+    if (n && !/^(Formato|Mazo|Carta|The|Para|Con|Si|En|De|La|El|Los|Las|Un|Una|Aqui|Esto|Este|Hola|Cada)/i.test(n)) cards.add(n);
+  }
+  return [...cards].slice(0, 25);
+}
+
+function formatText(text) {
+  return '<p>' + text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>') + '</p>';
+}
+
+function appendMessage(role, html) {
+  const chat = document.getElementById('chat');
+  const wrap = document.createElement('div'); wrap.className = 'msg ' + role;
+  const av = document.createElement('div'); av.className = 'avatar'; av.textContent = role === 'user' ? '🧙' : '🤖';
+  const bu = document.createElement('div'); bu.className = 'bubble'; bu.innerHTML = html;
+  wrap.appendChild(av); wrap.appendChild(bu);
+  chat.appendChild(wrap); chat.scrollTop = chat.scrollHeight;
+  return bu;
+}
+
+function showTyping() {
+  const chat = document.getElementById('chat');
+  const wrap = document.createElement('div'); wrap.className = 'msg ai'; wrap.id = 'typing-ind';
+  const av = document.createElement('div'); av.className = 'avatar'; av.textContent = '🤖';
+  const bu = document.createElement('div'); bu.className = 'bubble';
+  bu.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+  wrap.appendChild(av); wrap.appendChild(bu); chat.appendChild(wrap); chat.scrollTop = chat.scrollHeight;
+}
+function removeTyping() { document.getElementById('typing-ind')?.remove(); }
+
+async function addValidation(bubble, cardNames) {
+  const note = document.createElement('div'); note.className = 'system-note';
+  note.textContent = 'Validando ' + cardNames.length + ' cartas en Scryfall…';
+  bubble.appendChild(note);
+  document.getElementById('chat').scrollTop = 9999;
+
+  const results = await Promise.all(cardNames.map(async name => ({ name, ...(await checkCardLegality(name, currentFormat)) })));
+  note.remove();
+
+  const header = document.createElement('div'); header.className = 'validation-header';
+  header.textContent = 'Verificado en ' + currentFormat.charAt(0).toUpperCase() + currentFormat.slice(1);
+  bubble.appendChild(header);
+
+  const block = document.createElement('div'); block.className = 'cards-block';
+  results.forEach(c => {
+    const sc = (c.status === 'legal' || c.status === 'restricted') ? 'legal' : (c.status === 'not_found' || c.status === 'error') ? 'unknown' : 'illegal';
+    const row = document.createElement('div'); row.className = 'card-row ' + sc;
+    row.innerHTML = '<span class="card-name">' + (c.scryfallName || c.name) + '</span>' +
+      (c.reason ? '<span class="card-reason">' + c.reason + '</span>' : '') +
+      '<span class="badge ' + sc + '">' +
+      (c.status==='legal' ? '✓ Legal' : c.status==='restricted' ? '⚠ Restringida' : c.status==='banned' ? '✗ Baneada' : c.status==='not_found' ? '? No encontrada' : c.status==='illegal' ? '✗ Ilegal' : '? Error') +
+      '</span>';
+    block.appendChild(row);
+  });
+  bubble.appendChild(block);
+  document.getElementById('chat').scrollTop = 9999;
+
+  const illegals = results.filter(c => c.status === 'illegal' || c.status === 'banned');
+  if (illegals.length > 0) {
+    const names = illegals.map(c => c.scryfallName || c.name).join(', ');
+    setTimeout(() => appendMessage('ai', '<p>Scryfall confirma que <strong>' + names + '</strong> no ' + (illegals.length > 1 ? 'son legales' : 'es legal') + ' en ' + currentFormat + '. Pide alternativas si quieres.</p>'), 300);
+  }
+}
+
+async function callGroq(userMessage) {
+  const sys = 'Eres un experto en Magic: The Gathering especializado en construccion de mazos. El formato activo es ' + currentFormat.toUpperCase() + '. REGLAS: 1) Solo recomiendas cartas legales en ' + currentFormat + '. 2) Escribe nombres de cartas siempre en negrita **Nombre**. 3) Premodern = solo sets entre 4th Edition 1995 y Odyssey 2001, banned: Tolarian Academy, Frantic Search, Yawgmoths Will, Mystical Tutor, Demonic Tutor. 4) Si piden carta ilegal, explica y ofrece alternativa. 5) Responde en espanol. 6) Listas: 4x **Nombre** una por linea.';
+  const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + groqKey },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      max_tokens: 1024,
+      messages: [{ role: 'system', content: sys }, ...conversationHistory, { role: 'user', content: userMessage }]
+    })
+  });
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    if (resp.status === 401) { logout(); throw new Error('API key inválida. Vuelve a introducirla.'); }
+    throw new Error(err.error?.message || 'HTTP ' + resp.status);
+  }
+  const data = await resp.json();
+  return data.choices?.[0]?.message?.content || "";
+}
+
+async function sendMessage() {
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text || isLoading) return;
+  isLoading = true; input.value = ''; input.style.height = 'auto';
+  document.getElementById('sendBtn').disabled = true;
+  appendMessage('user', formatText(text));
+  conversationHistory.push({ role: 'user', content: text });
+  showTyping();
+  try {
+    const aiText = await callGroq(text);
+    removeTyping();
+    conversationHistory.push({ role: 'assistant', content: aiText });
+    const cards = extractCardNames(aiText);
+    const bubble = appendMessage('ai', formatText(aiText));
+    if (cards.length > 0) await addValidation(bubble, cards);
+  } catch (err) {
+    removeTyping();
+    appendMessage('ai', '<div class="error-banner">Error: ' + err.message + '</div>');
+  }
+  isLoading = false;
+  document.getElementById('sendBtn').disabled = false;
+  input.focus();
+}
+
+document.getElementById('sendBtn').addEventListener('click', sendMessage);
+document.getElementById('userInput').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+document.getElementById('userInput').addEventListener('input', function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 110) + 'px'; });
+document.querySelectorAll('.format-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.format-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active'); currentFormat = btn.dataset.fmt;
+    conversationHistory = []; document.getElementById('chat').innerHTML = '';
+    appendMessage('ai', '<p>Formato cambiado a <strong>' + currentFormat.toUpperCase() + '</strong>. Historial reiniciado.</p>');
+  });
+});
+</script>
+</body>
+</html>
