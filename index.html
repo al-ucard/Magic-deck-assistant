@@ -293,8 +293,66 @@ function isLand(n) {
 }
 
 // ── Groq ──────────────────────────────────────────────────────────────────────
+function selectHarnessSections(messages, extraSystem) {
+  if (!harness) return '# Premodern MTG\nEres un experto en Premodern MTG. Responde en español.';
+  
+  // Always include CORE and APRENDIZAJES
+  var sections = { CORE: true, APRENDIZAJES: true };
+  
+  // Combine all recent text to detect keywords
+  var recentText = messages.slice(-4).map(function(m) { return m.content; }).join(' ').toLowerCase();
+  if (extraSystem) recentText += ' ' + extraSystem.toLowerCase();
+  
+  // Load sections based on keywords
+  if (/meta|tier|arquetipo|qu[eé] se juega|competitivo|formato|metagame|qu[eé] decks/i.test(recentText))
+    sections.METAGAME = true;
+  if (/stiflenought|enchantress|sligh|the rock|goblins|psychatog|landstill|replenish|survival|elves|aluren|tinker|zoo|moneyball|parfait|reanimator/i.test(recentText))
+    sections.ARQUETIPOS = true;
+  if (/qu[eé] cartas|staples|opciones para|carta de|carta en|removal|counter|cantrip|tutor|tierras|mana|fijaci/i.test(recentText))
+    sections.STAPLES = true;
+  if (/combo|sinergia|win ?con|interacci[oó]n|loop|infinito|combinar/i.test(recentText))
+    sections.COMBOS = true;
+  if (/cu[aá]ntas tierras|curva|distribuci[oó]n|c[oó]mo construir|ratio|proporci[oó]n/i.test(recentText))
+    sections.CONSTRUCCION = true;
+  if (/legal|baneada|ilegal|no es legal|permitida|formato correcto|sets|de qu[eé] set/i.test(recentText))
+    sections.ADVERTENCIAS = true;
+  
+  // Always load ADVERTENCIAS when building a list
+  if (/lista final|dame la lista|construye|60 cartas/i.test(recentText)) {
+    sections.ADVERTENCIAS = true;
+    sections.ARQUETIPOS = true;
+    sections.STAPLES = true;
+  }
+  
+  // Parse harness into sections
+  var result = [];
+  var currentSection = null;
+  var currentContent = [];
+  var lines = harness.split('\n');
+  
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+    var sectionMatch = line.match(/^## #([A-Z]+)/);
+    if (sectionMatch) {
+      if (currentSection && sections[currentSection]) {
+        result.push(currentContent.join('\n'));
+      }
+      currentSection = sectionMatch[1];
+      currentContent = [line];
+    } else {
+      currentContent.push(line);
+    }
+  }
+  if (currentSection && sections[currentSection]) {
+    result.push(currentContent.join('\n'));
+  }
+  
+  var selected = result.join('\n\n');
+  return selected || harness.split('## #METAGAME')[0]; // fallback to CORE only
+}
+
 async function callGroq(messages, extraSystem) {
-  var system = (harness || '# Premodern MTG\nEres un experto en Premodern MTG. Responde en español.') +
+  var system = selectHarnessSections(messages, extraSystem) +
     (extraSystem ? '\n\n---\nINSTRUCCIÓN:\n' + extraSystem : '');
   var resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
